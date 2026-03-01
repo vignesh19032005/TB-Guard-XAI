@@ -1,3 +1,12 @@
+---
+title: TB Guard XAI
+emoji: 🏥
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # 🫁 TB-Guard-XAI: Explainable AI for Tuberculosis Screening
 
 **Built for the Mistral AI Worldwide Hackathon 2026**
