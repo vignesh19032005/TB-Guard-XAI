@@ -38,6 +38,18 @@ archive/
 extract_who_pdf.py
 who_tb_2025_extracted.txt
 WHO_2025_KEY_STATS.md
+HACKATHON_SUMMARY.md
+generate_per_dataset_performance.py
+generate_table_images.py
+
+# Generated visualizations (keep the important ones)
+!confusion_matrix.png
+!per_dataset_performance.png
+!roc_curve.png
+!reliability_diagram.png
+!uncertainty_dist.png
+!TB_Guard_XAI\ VS\ Existing.png
+!TB-Guard-XAI.png
 
 demo_image_results.txt
 find_demo_images.py
