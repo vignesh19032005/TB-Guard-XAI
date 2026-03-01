@@ -52,7 +52,9 @@ async def startup_event():
         explainer = MistralExplainer(model_path="models/ensemble_best.pth")
         print("✅ Models loaded successfully!")
     except Exception as e:
-        print(f"⚠️ Warning: Could not load models during startup: {e}")
+        print(f"❌ ERROR: Could not load models: {e}")
+        import traceback
+        traceback.print_exc()
 
 class ClinicalRequest(BaseModel):
     symptoms: str = ""
@@ -71,7 +73,16 @@ async def gallery(request: Request):
 
 @app.get("/status")
 def status():
-    return {"status": "online", "model_device": DEVICE, "rag_ready": True}
+    return {
+        "status": "online" if explainer else "error",
+        "model_device": DEVICE,
+        "rag_ready": True
+    }
+
+@app.get("/health")
+def health():
+    """Simple health check"""
+    return {"status": "ok"} if explainer else {"status": "error"}
 
 @app.post("/analyze")
 async def analyze_xray(
@@ -84,20 +95,56 @@ async def analyze_xray(
     if explainer is None:
         return {"error": "Model failed to load"}
 
+    # Simple validation
+    # 1. Check file extension
+    allowed_ext = ['.jpg', '.jpeg', '.png', '.dcm']
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in allowed_ext:
+        return {"error": f"Invalid file type. Allowed: {', '.join(allowed_ext)}"}
+    
+    # 2. Check file size (max 50MB)
+    contents = await file.read()
+    if len(contents) > 50 * 1024 * 1024:
+        return {"error": "File too large. Maximum size: 50MB"}
+    if len(contents) == 0:
+        return {"error": "Empty file"}
+    
+    # 3. Validate it's actually an image
+    try:
+        from PIL import Image
+        import io
+        img = Image.open(io.BytesIO(contents))
+        img.verify()
+        # Check dimensions
+        img = Image.open(io.BytesIO(contents))
+        w, h = img.size
+        if w < 100 or h < 100 or w > 10000 or h > 10000:
+            return {"error": f"Invalid image dimensions: {w}x{h}"}
+    except Exception as e:
+        return {"error": f"Invalid image file: {str(e)}"}
+
     # Save temp file
     temp_dir = Path("temp_uploads")
     temp_dir.mkdir(exist_ok=True)
-    temp_path = temp_dir / file.filename
+    import uuid
+    temp_path = temp_dir / f"{uuid.uuid4().hex}{file_ext}"
     
-    with open(temp_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # Write file
+    try:
+        with open(temp_path, "wb") as buffer:
+            buffer.write(contents)
+    except Exception as e:
+        return {"error": f"Failed to save file: {str(e)}"}
         
     try:
         # Run deep inference pipeline (Phase 1/2 + Phase 4)
         result = explainer.explain(str(temp_path), symptoms=symptoms, threshold=threshold, age_group=age_group)
         
         # Cleanup
-        os.remove(temp_path)
+        try:
+            os.remove(temp_path)
+        except:
+            pass
         
         # explanation is now a single string
         explanation = result["explanation"]
@@ -117,8 +164,11 @@ async def analyze_xray(
         }
         
     except Exception as e:
-        if temp_path.exists():
+        # Cleanup on error
+        try:
             os.remove(temp_path)
+        except:
+            pass
         import traceback
         traceback.print_exc()
         return {"error": str(e)}
@@ -127,10 +177,23 @@ async def analyze_xray(
 async def transcribe_audio(file: UploadFile = File(...)):
     """Transcribe audio recording of patient symptoms using Voxtral"""
     if explainer is None:
-        return {"error": "Model not loaded"}
+        return {"error": "Model not loaded", "transcript": "", "is_valid": False}
+    
+    # Simple validation
+    # 1. Check file size (max 25MB)
+    audio_bytes = await file.read()
+    if len(audio_bytes) == 0:
+        return {"error": "Empty audio file", "transcript": "", "is_valid": False}
+    if len(audio_bytes) > 25 * 1024 * 1024:
+        return {"error": "Audio file too large (max 25MB)", "transcript": "", "is_valid": False}
+    
+    # 2. Check file extension
+    allowed_ext = ['.wav', '.mp3', '.m4a', '.ogg', '.webm']
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in allowed_ext:
+        return {"error": f"Invalid audio format. Allowed: {', '.join(allowed_ext)}", "transcript": "", "is_valid": False}
     
     try:
-        audio_bytes = await file.read()
         transcript = explainer.transcribe_audio(audio_bytes)
         
         if transcript:
