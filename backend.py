@@ -112,7 +112,8 @@ async def analyze_xray(
             "clinical_synthesis": explanation,
             "evidence": result.get("evidence", []),
             "gradcam_image": result.get("gradcam_image"),
-            "gradcam_available": result.get("gradcam_image") is not None
+            "gradcam_available": result.get("gradcam_image") is not None,
+            "mode": result.get("mode", "unknown")  # offline or online
         }
         
     except Exception as e:

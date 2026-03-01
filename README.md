@@ -37,11 +37,12 @@ pinned: false
 
 ## 🚨 The Problem
 
-### Global TB Crisis (WHO 2024 Data)
-- **1.23 million deaths in 2024** - TB remains the world's deadliest infectious disease
+### Global TB Crisis (WHO 2025 Report - 2024 Data)
+- **1.23 million deaths in 2024** - TB remains one of the world's deadliest infectious diseases
 - **10.7 million new cases in 2024** (5.8M men, 3.7M women, 1.2M children)
-- **87% of cases** occur in low and middle-income countries
+- **87% of cases** occur in 30 high TB burden countries
 - **South-East Asia (34%), Western Pacific (27%), Africa (25%)** bear highest burden
+- **Only 78% of cases detected** - 2.4 million people with TB remain undiagnosed
 
 ### Radiologist Shortage in Resource-Limited Settings
 - **Less than 2 radiologists per million people** in low-income countries
@@ -260,13 +261,30 @@ TB-Guard-XAI uses a hybrid offline-first, cloud-enhanced architecture that intel
 - **High Uncertainty (>0.25 std)**: Flagged for human review
 
 ### Multi-Dataset Validation
-Trained and validated on 6 global datasets:
-- Shenzhen TB Dataset (China)
-- Montgomery County TB Dataset (USA)
-- NIH Chest X-ray Dataset
-- TBX11K Dataset
-- Belarus TB Portal
-- DA/DR TB Dataset
+Trained and validated on 6 global datasets ensuring robust generalization:
+
+1. **[Shenzhen TB Dataset](https://data.lhncbc.nlm.nih.gov/public/Tuberculosis-Chest-X-ray-Datasets/)** (China) - 662 images
+   - Direct download: [NIH LHNCBC](https://data.lhncbc.nlm.nih.gov/public/Tuberculosis-Chest-X-ray-Datasets/Shenzhen-Hospital-CXR-Set.zip)
+   - Alternative: [Academic Torrents](https://academictorrents.com/details/462728e890bd37c05e9439c885df7afc36209cc8)
+
+2. **[Montgomery County TB Dataset](https://data.lhncbc.nlm.nih.gov/public/Tuberculosis-Chest-X-ray-Datasets/)** (USA) - 138 images
+   - Direct download: [NIH LHNCBC](https://data.lhncbc.nlm.nih.gov/public/Tuberculosis-Chest-X-ray-Datasets/Montgomery-County-CXR-Set.zip)
+   - Alternative: [Academic Torrents](https://academictorrents.com/details/ac786f74878a5775c81d490b23842fd4736bfe33)
+
+3. **[NIH ChestX-ray14 Dataset](https://www.nih.gov/news-events/news-releases/nih-clinical-center-provides-one-largest-publicly-available-chest-x-ray-datasets-scientific-community)** - 112,120 images
+   - Download: [Academic Torrents](https://academictorrents.com/details/557481faacd824c83fbf57dcf7b6da9383b3235a)
+   - Alternative: [Hugging Face](https://huggingface.co/datasets/alkzar90/NIH-Chest-X-ray-dataset)
+
+4. **[TBX11K Dataset](https://arxiv.org/abs/2007.15073)** - 11,200 images with bounding boxes
+   - Download: [Academic Torrents](https://academictorrents.com/details/07a9e9d43be209b1547f4829c9cb376f30551d6c)
+   - Alternative: [GTS.AI](https://gts.ai/dataset-download/tbx-11/)
+
+5. **[Belarus TB Portal](https://tbportals.niaid.nih.gov/)** - 1,049 drug-resistant TB images
+   - Download: [Academic Torrents](https://academictorrents.com/details/509f986b456b6fce04c15f9d1de22cd4ccb2c4b7)
+   - Official: [TB Portals](https://tbportals.niaid.nih.gov/download-data) (requires data usage agreement)
+
+6. **[DA/DR TB Dataset](https://data.mendeley.com/datasets/8j2g3csprk)** (Pakistan) - 3,008 images
+   - Download: [Mendeley Data](https://data.mendeley.com/datasets/8j2g3csprk/1)
 
 ---
 

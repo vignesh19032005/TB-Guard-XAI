@@ -34,6 +34,10 @@ archive/
 # Logs
 *.log
 
+# WHO report extraction files
+extract_who_pdf.py
+who_tb_2025_extracted.txt
+WHO_2025_KEY_STATS.md
 
 demo_image_results.txt
 find_demo_images.py

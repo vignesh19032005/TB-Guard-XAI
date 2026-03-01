@@ -175,7 +175,7 @@
           </div>
           <span class="text-[11px] font-medium text-slate-600 dark:text-slate-300" id="themeLabel">Dark</span>
         </button>
-        <div class="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+        <div id="statusIndicator" class="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
           <div class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></div><span
             class="text-emerald-600 dark:text-emerald-500 text-[10px] font-bold uppercase tracking-wide">Online</span>
         </div>
@@ -572,6 +572,15 @@
 
         if (data.error) throw new Error(data.error);
         else {
+          // Log mode
+          const mode = data.mode || 'unknown';
+          if (mode === 'offline') {
+            addTraceLog('System', '🔌 OFFLINE MODE: No internet connection detected');
+            addTraceLog('System', 'Using CNN ensemble only (no Gemini/Mistral/RAG)');
+          } else if (mode === 'online') {
+            addTraceLog('System', '🌐 ONLINE MODE: Internet connection available');
+          }
+          
           // Finish pipeline successfully
           steps.forEach(s => {
             s.classList.remove('opacity-40');
@@ -631,6 +640,10 @@
     function displayResults(data) {
       const prob = data.probability || 0, confidence = prob > 0.5 ? prob : (1 - prob), uncertainty = data.uncertainty || 'Unknown', uncertaintyStd = data.uncertainty_std || 0, prediction = data.prediction || 'Unknown';
       const isTB = prediction.toLowerCase().includes('tuberculosis') || prediction.toLowerCase().includes('tb') || prediction === 'Possible Tuberculosis';
+      
+      // Update status indicator based on mode
+      const mode = data.mode || 'unknown';
+      updateStatusIndicator(mode);
 
       const pc = document.getElementById('predictionCard'), pl = document.getElementById('predictionLabel'), ps = document.getElementById('predictionSub');
       pc.className = 'glass-panel p-3 rounded-xl border-l-4 ' + (isTB ? 'border-l-red-500 bg-red-500/5' : 'border-l-emerald-500 bg-emerald-500/5');
@@ -666,6 +679,19 @@
       document.getElementById('clinicalSynthesis').innerHTML = formatExplanation(
         data.clinical_synthesis || "Clinical synthesis was not returned by the model."
       );
+    }
+    
+    function updateStatusIndicator(mode) {
+      const indicator = document.getElementById('statusIndicator');
+      if (!indicator) return;
+      
+      if (mode === 'offline') {
+        indicator.className = 'flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/20 px-2.5 py-1 rounded-full';
+        indicator.innerHTML = '<div class="size-1.5 rounded-full bg-orange-500"></div><span class="text-orange-600 dark:text-orange-500 text-[10px] font-bold uppercase tracking-wide">Offline</span>';
+      } else if (mode === 'online') {
+        indicator.className = 'flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full';
+        indicator.innerHTML = '<div class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></div><span class="text-emerald-600 dark:text-emerald-500 text-[10px] font-bold uppercase tracking-wide">Online</span>';
+      }
     }
 
     /* ── MARKDOWN → CLEAN HTML ──────────────────── */

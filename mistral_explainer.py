@@ -6,6 +6,7 @@ from pathlib import Path
 import torch
 import numpy as np
 from mistralai import Mistral
+import socket
 
 from ensemble_models import load_ensemble
 from preprocessing import LungPreprocessor, get_val_transforms
@@ -16,17 +17,33 @@ import cv2
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
+def check_internet_connection(timeout=3):
+    """Check if internet connection is available"""
+    try:
+        # Try to connect to Google DNS
+        socket.create_connection(("8.8.8.8", 53), timeout=timeout)
+        return True
+    except OSError:
+        pass
+    try:
+        # Fallback: try Cloudflare DNS
+        socket.create_connection(("1.1.1.1", 53), timeout=timeout)
+        return True
+    except OSError:
+        return False
+
 class MistralExplainer:
-    """Explainable AI system with Mistral LLM"""
+    """Explainable AI system with Mistral LLM - supports offline mode"""
     
     def __init__(self, model_path=None):
         self.model = load_ensemble(model_path, DEVICE)
         self.mistral = Mistral(api_key=MISTRAL_API_KEY) if MISTRAL_API_KEY else None
         self.rag = QdrantRAG()
         self.preprocessor = LungPreprocessor()
+        self.offline_mode = False
         
         if not self.mistral:
-            print("⚠️  MISTRAL_API_KEY not set")
+            print("⚠️  MISTRAL_API_KEY not set - offline mode only")
     
     def predict_with_uncertainty(self, image_path, n_samples=20):
         """Get prediction with uncertainty"""
@@ -206,6 +223,118 @@ Return EXACTLY one word:
         
         results = self.rag.query(query, top_k=4)
         return results
+    
+    def generate_offline_explanation(self, prediction_data, gradcam_data, symptoms=None, age_group="Adult"):
+        """Generate offline explanation when internet is unavailable"""
+        prob = prediction_data["probability"]
+        uncertainty = prediction_data["uncertainty_level"]
+        uncertainty_std = prediction_data["uncertainty_std"]
+        region = gradcam_data["description"]
+        prediction_label = "Possible Tuberculosis" if prob >= 0.5 else "Likely Normal"
+        
+        # Age-specific notes
+        age_note = ""
+        if age_group == "Child":
+            age_note = "\n\n**Pediatric Note:** Children typically present with hilar lymphadenopathy rather than cavitary disease. Any suspicious findings warrant immediate clinical correlation."
+        elif age_group == "Senior":
+            age_note = "\n\n**Senior Note:** Elderly patients often show atypical presentations with lower lobe involvement. Clinical correlation is essential."
+        
+        symptoms_text = f"\n\n**Reported Symptoms:** {symptoms}" if symptoms else ""
+        
+        explanation = f"""# 🔌 OFFLINE MODE - CNN Ensemble Analysis
+
+## ⚠️ Limited Analysis Available
+This analysis was performed **offline** using only the CNN ensemble model. Internet connectivity is required for:
+- Gemini 2.5 Flash validation
+- Mistral Large clinical synthesis
+- WHO evidence retrieval (RAG)
+
+## CNN Prediction Results
+
+**Prediction:** {prediction_label}  
+**TB Probability:** {prob:.1%}  
+**Uncertainty Level:** {uncertainty} (std: {uncertainty_std:.4f})  
+**Model Attention:** {region}
+
+### Uncertainty Interpretation
+- **Low (<0.15):** Model is confident - prediction likely reliable
+- **Medium (0.15-0.25):** Moderate confidence - clinical correlation recommended
+- **High (>0.25):** Low confidence - specialist review required
+
+## Grad-CAM++ Visual Analysis
+
+The model's attention focused on **{region}**. This indicates the areas that most influenced the prediction.
+
+**Clinical Significance:**
+- Upper lung zones: Typical for post-primary (reactivation) TB
+- Lower lung zones: May indicate atypical presentation or other pathology
+- Diffuse distribution: Suggests widespread involvement{symptoms_text}{age_note}
+
+## Recommendations (Offline Mode)
+
+### If TB Suspected (Probability ≥ 50%):
+1. **Confirmatory Testing Required:**
+   - Sputum microscopy (Ziehl-Neelsen staining)
+   - GeneXpert MTB/RIF Ultra
+   - Mycobacterial culture (gold standard)
+
+2. **Clinical Correlation:**
+   - Assess for TB symptoms: persistent cough (>2 weeks), fever, night sweats, weight loss
+   - Evaluate TB risk factors: HIV status, contact history, previous TB
+   - Consider chest CT if X-ray findings unclear
+
+3. **Immediate Actions:**
+   - Isolate patient if symptomatic
+   - Initiate contact tracing if confirmed
+   - Follow local TB program protocols
+
+### If Normal (Probability < 50%):
+1. **Monitor for Symptoms:**
+   - Persistent cough, fever, weight loss
+   - Return if symptoms develop
+
+2. **High-Risk Groups:**
+   - Consider IGRA or TST for latent TB screening
+   - Follow up in 2-3 months if symptomatic
+
+### If High Uncertainty:
+- **Specialist radiologist review REQUIRED**
+- Do not rely solely on AI prediction
+- Consider repeat imaging or additional tests
+
+## Limitations (Offline Mode)
+
+⚠️ **This is a screening tool, NOT a diagnostic tool**
+
+**Without Internet:**
+- No independent AI validation (Gemini)
+- No comprehensive clinical synthesis (Mistral Large)
+- No WHO evidence-based recommendations (RAG)
+- Limited to CNN predictions only
+
+**General Limitations:**
+- AI trained primarily on adult Asian datasets
+- May miss atypical presentations
+- Cannot detect drug resistance
+- Requires confirmatory testing
+- Image quality affects accuracy
+
+## Next Steps
+
+1. **Connect to internet** for comprehensive analysis with:
+   - Gemini 2.5 Flash validation
+   - Mistral Large clinical synthesis
+   - WHO evidence-based recommendations
+
+2. **Consult qualified healthcare professional** for clinical interpretation
+
+3. **Perform confirmatory testing** if TB suspected
+
+---
+
+**⚠️ CLINICAL DISCLAIMER:** This offline analysis provides limited screening support only. All findings must be confirmed by qualified healthcare professionals and appropriate diagnostic tests. Do not use for self-diagnosis or treatment decisions.
+"""
+        return explanation
     
     def generate_explanation(self, prediction_data, gradcam_data, evidence, symptoms=None, age_group="Adult", image_path=None):
         """Generate clinical explanation using INTERNAL VALIDATION PIPELINE:
@@ -488,8 +617,19 @@ Keep each section to 2-3 sentences."""
             return False
     
     def explain(self, image_path, symptoms=None, threshold=0.5, age_group="Adult (40-64)"):
-        """Full explanation pipeline with Gemini + Mistral Large synthesis"""
+        """Full explanation pipeline with automatic offline/online detection"""
         print(f"🔍 Analyzing: {image_path}\n")
+        
+        # Check internet connectivity
+        has_internet = check_internet_connection()
+        self.offline_mode = not has_internet
+        
+        if self.offline_mode:
+            print("🔌 OFFLINE MODE: No internet connection detected")
+            print("   Using CNN ensemble only (no Gemini/Mistral/RAG)\n")
+        else:
+            print("🌐 ONLINE MODE: Internet connection available")
+            print("   Full pipeline: CNN → Gemini → Mistral → RAG\n")
         
         # 1. Basic image validation
         print("🛡️ Running image validation...")
@@ -507,18 +647,45 @@ Keep each section to 2-3 sentences."""
                 "explanation": "⚠️ **ERROR: INVALID IMAGE**\nThe uploaded file is not a valid medical image or does not meet size requirements."
             }
         
-        # 2. Prediction with uncertainty
+        # 2. Prediction with uncertainty (always runs - offline capable)
         pred_data = self.predict_with_uncertainty(image_path)
         
-        # Grad-CAM analysis
+        # 3. Grad-CAM analysis (always runs - offline capable)
         gradcam_data = self.analyze_gradcam(pred_data["image_tensor"])
         
-        # Generate Grad-CAM++ overlay image
+        # 4. Generate Grad-CAM++ overlay image (always runs - offline capable)
         gradcam_image = None
         try:
             gradcam_image = self.create_gradcam_overlay(image_path, gradcam_data["heatmap"])
         except Exception as e:
             print(f"⚠️ Grad-CAM++ overlay generation failed: {e}")
+        
+        # 5. OFFLINE MODE: Skip cloud services
+        if self.offline_mode or not self.mistral:
+            print("📊 Generating offline explanation...")
+            explanation = self.generate_offline_explanation(
+                pred_data,
+                gradcam_data,
+                symptoms,
+                age_group=age_group
+            )
+            
+            prediction_label = "Possible Tuberculosis" if pred_data["probability"] >= threshold else "Likely Normal"
+            
+            return {
+                "prediction": prediction_label,
+                "probability": pred_data["probability"],
+                "uncertainty": pred_data["uncertainty_level"],
+                "uncertainty_std": pred_data["uncertainty_std"],
+                "gradcam_region": gradcam_data["description"],
+                "gradcam_image": gradcam_image,
+                "evidence": [],
+                "explanation": explanation,
+                "mode": "offline"
+            }
+        
+        # 6. ONLINE MODE: Full pipeline with cloud services
+        print("☁️ Running full online pipeline...")
         
         # Retrieve evidence (graceful fallback)
         evidence = []
@@ -559,7 +726,8 @@ Keep each section to 2-3 sentences."""
             "gradcam_region": gradcam_data["description"],
             "gradcam_image": gradcam_image,
             "evidence": evidence,
-            "explanation": explanation
+            "explanation": explanation,
+            "mode": "online"
         }
         
         return result
