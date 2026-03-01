@@ -31,6 +31,29 @@ archive/
 # macOS
 .DS_Store
 
+# Security & Credentials
+token.pickle
+credentials.json
+temp_gdrive/
+
+# Google Drive Integration
+# OAuth credentials and tokens
+credentials.json
+token.pickle
+client_secret*.json
+*.json.bak
+
+# Google Drive temp folders
+temp_gdrive/
+gdrive_temp/
+TB_XRay_Inbox/
+TB_Reports/
+TB_Processed/
+
+# Google Drive batch processing logs
+gdrive_*.log
+batch_processing.log
+
 # Logs
 *.log
 
@@ -60,3 +83,7 @@ models/*.pth
 
 test_architecture.py
 test_llava_med.py
+demo_gdrive_batch.py
+GDRIVE_API_SUMMARY.md
+gdrive_batch_processor.py
+GDRIVE_SETUP.md

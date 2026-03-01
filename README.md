@@ -244,6 +244,15 @@ TB-Guard-XAI uses a hybrid offline-first, cloud-enhanced architecture that intel
 - **PDF Generation**: One-click printable reports
 - **Action Plans**: Clear next steps for clinicians
 
+### 8. Google Drive Batch Processing 🆕
+- **Automatic Processing**: Upload X-rays to Google Drive, get reports automatically
+- **Batch Analysis**: Process hundreds of X-rays overnight
+- **Cloud Integration**: Accessible from anywhere, perfect for telemedicine
+- **Zero Manual Work**: Drop files in folder, reports appear automatically
+- **Audit Trail**: All processed X-rays and reports stored in organized folders
+
+**Setup Guide**: See [GDRIVE_SETUP.md](GDRIVE_SETUP.md) for Google Drive integration
+
 ---
 
 ## 📊 Performance Metrics
@@ -737,13 +746,6 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 ## 🚀 Usage
 
-### Starting the Server
-```bash
-python backend.py
-```
-
-The server will start at `http://localhost:8000`
-
 ### Web Interface
 
 1. **Upload X-Ray**: Drag and drop or click to upload chest X-ray image
@@ -756,7 +758,36 @@ The server will start at `http://localhost:8000`
    - Comprehensive clinical synthesis
 6. **Generate Report**: Click "Generate Clinical Report" for PDF
 
-### API Endpoints
+### Google Drive Batch Processing 🆕
+
+**Perfect for clinics processing multiple X-rays daily**
+
+```bash
+# Setup (one-time)
+# See GDRIVE_SETUP.md for detailed instructions
+pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client fpdf
+
+# Run batch processor
+python gdrive_batch_processor.py
+```
+
+**How it works:**
+1. Upload X-rays to "TB_XRay_Inbox" folder in Google Drive
+2. System automatically detects and analyzes them
+3. PDF reports saved to "TB_Reports" folder
+4. Original X-rays moved to "TB_Processed" folder
+
+**Use Cases:**
+- 📊 **Batch Processing**: Upload 100+ X-rays, get all reports overnight
+- 🏥 **Rural Clinics**: Staff uploads at 5pm, reports ready by morning
+- 📱 **Mobile Health**: Field workers upload via mobile, instant cloud processing
+- 🌐 **Telemedicine**: Remote clinics share Drive folder, central AI processes all
+
+**See [GDRIVE_SETUP.md](GDRIVE_SETUP.md) for complete setup guide**
+
+---
+
+## 🚀 Usage (API)
 
 #### POST /analyze
 Analyze chest X-ray with full pipeline
