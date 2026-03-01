@@ -6,7 +6,7 @@ TB-Guard-XAI is an Explainable AI triage and clinical decision-support pipeline 
 
 Instead of acting as a "black box" that outputs a simple percentage, TB-Guard orchestrates a multi-modal ensemble of **Mistral's Latest AI Models** and **PyTorch Deep Learning** to provide robust, explainable, and localized clinical screening.
 
-![TB-Guard-XAI Dashboard](demo_dashboard_placeholder.png) <!-- *Replace with actual screenshot of your beautiful UI before submitting!* -->
+![TB-Guard-XAI Dashboard](https://github.com/vignesh19032005/TB-Guard-XAI/blob/de74fe2548342ca0c66d0f3771885d07c112c042/TB-Guard-XAI.png) <!-- *Replace with actual screenshot of your beautiful UI before submitting!* -->
 
 ---
 
