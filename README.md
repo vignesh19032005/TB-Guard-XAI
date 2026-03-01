@@ -389,7 +389,7 @@ python backend.py
 **ECE: 0.173** - Well-calibrated confidence predictions
 
 #### Uncertainty Distribution
-![Uncertainty Distribution](uncertainty_distribution.png)
+![Uncertainty Distribution]([uncertainty_distribution.png](https://github.com/vignesh19032005/TB-Guard-XAI/blob/a16d60b0b611a5143aecc9a3403e908183671884/uncertainty_dist.png))
 Clear separation between TB and Normal cases in uncertainty space
 
 </div>
