@@ -6,6 +6,7 @@ colorTo: indigo
 sdk: docker
 app_file: backend.py
 pinned: true
+short_description: TB Clinical Triage with Deep Learning, RAG & Explainable AI
 ---
 # 🫁 TB-Guard-XAI: Explainable AI Triage for Mass Tuberculosis Screening
 
