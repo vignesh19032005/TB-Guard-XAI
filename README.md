@@ -295,7 +295,7 @@ Trained and validated on 6 global datasets:
 
 <div align="center">
 
-![Comparison Table](comparison_table.png)
+![TB-Guard-XAI vs Existing Solutions](TB_Guard_XAI%20VS%20Existing.png)
 
 </div>
 
