@@ -41,3 +41,6 @@ test_*.py
 
 models/*.pth
 !models/ensemble_best.pth
+
+test_architecture.py
+test_llava_med.py

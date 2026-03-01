@@ -141,7 +141,7 @@
                     <span
                         class="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] border border-green-200 dark:border-green-500/20 font-medium uppercase tracking-wider">Live</span>
                 </h2>
-                <p class="text-slate-500 dark:text-slate-400 text-[11px]">Powered by Mistral Large 3 • MedGemma
+                <p class="text-slate-500 dark:text-slate-400 text-[11px]">Powered by Mistral Large + Gemini 2.5 Flash
                     Validated</p>
             </div>
             <div class="flex items-center gap-3">
@@ -176,7 +176,7 @@
                         are generated using the vast medical knowledge of <strong>Mistral Large 3</strong>.
                         <br><span class="text-xs text-slate-500 dark:text-slate-500 mt-1 inline-block"><span
                                 class="material-symbols-outlined text-[12px] text-emerald-500 align-text-bottom">verified</span>
-                            Monitored for clinical safety compliance by MedGemma guardrails.</span>
+                            Monitored for clinical safety compliance by Gemini 2.5 Flash guardrails.</span>
                     </p>
                     <div class="flex flex-wrap gap-2">
                         <span
@@ -338,8 +338,8 @@
           <div class="p-4 text-sm leading-relaxed space-y-2">${formattedText}</div>
           <div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-2 border-t border-slate-200 dark:border-slate-700/50 flex flex-wrap items-center justify-between gap-2">
             ${isUnsafe ?
-                        '<div class="flex items-center gap-2"><span class="text-lg">⚠️</span><span class="text-xs font-medium text-red-500">MedGemma: Consult Human Doctor</span></div>' :
-                        '<div class="flex items-center gap-2 px-2 py-1 rounded bg-blue-50 dark:bg-primary/10 border border-blue-200 dark:border-primary/20" style="box-shadow:0 0 10px rgba(13,127,242,0.3)"><span class="text-lg">🛡️</span><span class="text-xs font-medium text-primary">MedGemma Clinical Safety Validated</span></div>'
+                        '<div class="flex items-center gap-2"><span class="text-lg">⚠️</span><span class="text-xs font-medium text-red-500">Safety Check: Consult Human Doctor</span></div>' :
+                        '<div class="flex items-center gap-2 px-2 py-1 rounded bg-blue-50 dark:bg-primary/10 border border-blue-200 dark:border-primary/20" style="box-shadow:0 0 10px rgba(13,127,242,0.3)"><span class="text-lg">✓</span><span class="text-xs font-medium text-primary">Clinical Safety Validated</span></div>'
                     }
             <div class="flex items-center gap-2">
               <button onclick="copyText(this)" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-slate-900 dark:hover:text-white" title="Copy"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>

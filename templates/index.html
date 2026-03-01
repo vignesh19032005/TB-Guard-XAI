@@ -227,13 +227,11 @@
               <select id="patientAge"
                 class="w-full bg-transparent border-none text-xs font-semibold text-slate-700 dark:text-slate-300 focus:ring-0 outline-none cursor-pointer p-0"
                 onchange="saveState()">
-                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Child (0-14)">Child
-                  (0-14 years)</option>
-                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Young Adult (15-39)">
-                  Young Adult (15-39 years)</option>
-                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Adult (40-64)"
-                  selected>Adult (40-64 years)</option>
-                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Senior (65+)">Senior
+                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Child">Child
+                  (0-17 years)</option>
+                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Adult"
+                  selected>Adult (18-64 years)</option>
+                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Senior">Senior
                   (65+ years)</option>
               </select>
             </div>
@@ -337,8 +335,8 @@
               </div>
             </div>
 
-            <!-- XAI VIEWER -->
-            <div class="lg:col-span-5 glass-panel rounded-2xl p-1 overflow-hidden flex flex-col">
+            <!-- XAI VIEWER - EXPANDED -->
+            <div class="lg:col-span-9 glass-panel rounded-2xl p-1 overflow-hidden flex flex-col">
               <div
                 class="flex items-center justify-between px-3 py-2 border-b border-slate-200 dark:border-slate-700/50">
                 <h3 class="font-semibold text-slate-900 dark:text-white text-xs flex items-center gap-1.5"><span
@@ -349,12 +347,12 @@
                   class="text-[9px] font-mono text-slate-500 dark:text-slate-400 hidden bg-slate-200/50 dark:bg-slate-800/50 px-2 py-0.5 rounded truncate max-w-[200px]"
                   title=""></span>
               </div>
-              <div class="flex-1 relative bg-slate-100 dark:bg-slate-900 grid grid-cols-2 gap-px min-h-[200px]">
+              <div class="flex-1 relative bg-slate-100 dark:bg-slate-900 grid grid-cols-2 gap-px min-h-[280px] max-h-[280px]">
                 <div class="relative overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-800">
                   <div
                     class="absolute top-1.5 left-1.5 z-10 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] text-white">
                     Input</div>
-                  <img id="resultOriginal" class="w-full h-full object-contain hidden" alt="Original" />
+                  <img id="resultOriginal" class="max-w-full max-h-[280px] object-contain hidden" alt="Original" />
                   <div id="skelOriginal" class="flex flex-col items-center gap-2 text-slate-400 dark:text-slate-500">
                     <span class="material-symbols-outlined text-3xl">image</span><span class="text-[10px]">X-ray will
                       appear here</span>
@@ -364,7 +362,7 @@
                   <div
                     class="absolute top-1.5 left-1.5 z-10 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] text-white">
                     Grad-CAM++</div>
-                  <img id="resultGradcam" class="w-full h-full object-contain hidden" alt="Grad-CAM++" />
+                  <img id="resultGradcam" class="max-w-full max-h-[280px] object-contain hidden" alt="Grad-CAM++" />
                   <div id="skelGradcam" class="flex flex-col items-center gap-2 text-slate-400 dark:text-slate-500">
                     <span class="material-symbols-outlined text-3xl">colorize</span><span class="text-[10px]">Heatmap
                       will appear here</span>
@@ -376,51 +374,37 @@
 
           <h2
             class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mt-6 pt-2 px-1 border-b border-indigo-200 dark:border-indigo-900 pb-1 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-sm">psychology</span>Phase 2: Mistral Generative AI Analysis
+            <span class="material-symbols-outlined text-sm">psychology</span>Phase 2: AI Clinical Reasoning (Gemini + Mistral + RAG)
           </h2>
 
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <!-- MISTRAL VISION -->
+          <div class="grid grid-cols-1 gap-4">
+            <!-- SINGLE COMPREHENSIVE CLINICAL SYNTHESIS -->
             <div
-              class="lg:col-span-6 glass-panel rounded-2xl p-4 flex flex-col border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.08)] bg-indigo-50/50 dark:bg-indigo-900/10">
-              <div class="flex items-center gap-2 mb-2">
+              class="glass-panel rounded-2xl p-4 flex flex-col border-2 border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.15)] bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-900/10 dark:to-pink-900/10">
+              <div class="flex items-center gap-2 mb-3">
                 <div
-                  class="size-7 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-white text-base">visibility</span>
+                  class="size-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg">
+                  <span class="material-symbols-outlined text-white text-lg">psychology</span>
                 </div>
-                <div>
-                  <h3 class="text-slate-900 dark:text-white font-bold text-xs">Mistral Independent Vision</h3>
-                  <p class="text-indigo-600 dark:text-indigo-300 text-[9px]">Pixtral-Large-Latest Second Opinion</p>
-                </div>
-              </div>
-              <div id="mistralVisionReasoning"
-                class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[220px] text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed">
-                <!-- Vision text injected here -->
-                <p class="text-slate-400 italic text-xs">Run analysis to see vision assessment...</p>
-              </div>
-            </div>
-
-            <!-- MISTRAL RAG -->
-            <div
-              class="lg:col-span-6 glass-panel rounded-2xl p-4 flex flex-col border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.08)]">
-              <div class="flex items-center gap-2 mb-2">
-                <div
-                  class="size-7 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-white text-base">psychology</span>
-                </div>
-                <div>
-                  <h3 class="text-slate-900 dark:text-white font-bold text-xs">Clinical Synthesis</h3>
-                  <p class="text-purple-600 dark:text-purple-300 text-[9px]">RAG Guidelines + Multimodal Reasoning</p>
+                <div class="flex-1">
+                  <h3 class="text-slate-900 dark:text-white font-bold text-sm flex items-center gap-2">
+                    Comprehensive Clinical Synthesis
+                    <span class="px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-[9px] font-semibold uppercase tracking-wide">Mistral-Large + RAG</span>
+                  </h3>
+                  <p class="text-purple-600 dark:text-purple-300 text-[10px]">CNN + Gemini Validation • WHO Evidence • Multimodal Reasoning • Tool Calling</p>
                 </div>
               </div>
-              <div id="mistralRagReasoning"
-                class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[160px] text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed">
-                <!-- RAG text injected here -->
-                <p class="text-slate-400 italic text-xs">Run analysis to see clinical synthesis...</p>
+              <div id="clinicalSynthesis"
+                class="flex-1 overflow-y-auto space-y-2 pr-2 max-h-[500px] text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed bg-white/50 dark:bg-slate-800/30 rounded-xl p-4 border border-purple-200/50 dark:border-purple-500/20">
+                <!-- Clinical synthesis text injected here -->
+                <p class="text-slate-400 italic text-xs flex items-center gap-2">
+                  <span class="animate-spin material-symbols-outlined text-sm">progress_activity</span>
+                  Awaiting comprehensive clinical analysis...
+                </p>
               </div>
 
               <!-- FOLLOW-UP -->
-              <div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700/50">
+              <div class="mt-3 pt-3 border-t border-purple-200 dark:border-purple-700/50">
                 <div class="flex gap-1.5">
                   <input id="followupInput" type="text"
                     class="flex-1 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:ring-1 focus:ring-primary/50"
@@ -620,10 +604,28 @@
       const ps = document.getElementById('pipelineStatus'); ps.textContent = 'Initializing...'; ps.className = 'text-[11px] font-mono text-primary animate-pulse';
     }
     function resetResults() {
+      // Reset images
       document.getElementById('skelOriginal').classList.remove('hidden'); document.getElementById('skelGradcam').classList.remove('hidden');
       document.getElementById('resultOriginal').classList.add('hidden'); document.getElementById('resultGradcam').classList.add('hidden');
-      document.getElementById('mistralVisionReasoning').innerHTML = '<div class="flex items-center gap-2 text-slate-400"><span class="animate-spin material-symbols-outlined text-sm">progress_activity</span><span class="text-xs">Analyzing Image...</span></div>';
-      document.getElementById('mistralRagReasoning').innerHTML = '<div class="flex items-center gap-2 text-slate-400"><span class="animate-spin material-symbols-outlined text-sm">progress_activity</span><span class="text-xs">Synthesizing Clinical Evidence...</span></div>';
+      
+      // Reset metrics to initial state
+      const pc = document.getElementById('predictionCard'), pl = document.getElementById('predictionLabel'), ps = document.getElementById('predictionSub');
+      pc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-slate-300';
+      pl.textContent = '—'; ps.textContent = 'Awaiting'; ps.className = 'text-xs mt-0.5';
+      
+      document.getElementById('tbProbValue').textContent = '—'; 
+      document.getElementById('tbProbBar').style.width = '0%';
+      document.getElementById('confidenceValue').textContent = '—';
+      document.getElementById('uncertaintyValue').textContent = '—';
+      const us = document.getElementById('uncertaintySub'), uc = document.getElementById('uncertaintyCard');
+      us.textContent = '—'; 
+      uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-yellow-500 bg-yellow-500/5 flex-1';
+      
+      // Hide CNN region tag
+      document.getElementById('cnnRegionText').classList.add('hidden');
+      
+      // Reset reasoning panel
+      document.getElementById('clinicalSynthesis').innerHTML = '<div class="flex items-center gap-2 text-slate-400"><span class="animate-spin material-symbols-outlined text-sm">progress_activity</span><span class="text-xs">Running comprehensive clinical analysis...</span></div>';
     }
 
     function displayResults(data) {
@@ -660,11 +662,8 @@
         regionEl.classList.add('hidden');
       }
 
-      // Reasoning — backend sends vision_analysis and clinical_synthesis as separate fields
-      document.getElementById('mistralVisionReasoning').innerHTML = formatExplanation(
-        data.vision_analysis || "Vision analysis was not returned by the model."
-      );
-      document.getElementById('mistralRagReasoning').innerHTML = formatExplanation(
+      // Single clinical synthesis output
+      document.getElementById('clinicalSynthesis').innerHTML = formatExplanation(
         data.clinical_synthesis || "Clinical synthesis was not returned by the model."
       );
     }
@@ -710,8 +709,8 @@
     /* ── FOLLOW-UP QUESTIONS ────────────────────── */
     async function askFollowup() {
       const input = document.getElementById('followupInput'); const q = input.value.trim(); if (!q) return; input.value = '';
-      const panel = document.getElementById('mistralRagReasoning');
-      panel.innerHTML += `<div class="mt-3 pt-2 border-t border-indigo-200 dark:border-indigo-500/20"><p class="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1">Follow-up: ${q}</p><div class="flex items-center gap-1.5 text-slate-400"><span class="animate-spin material-symbols-outlined text-[12px]">progress_activity</span><span class="text-[11px]">Thinking...</span></div></div>`;
+      const panel = document.getElementById('clinicalSynthesis');
+      panel.innerHTML += `<div class="mt-3 pt-2 border-t border-purple-200 dark:border-purple-500/20"><p class="text-xs font-bold text-purple-600 dark:text-purple-400 mb-1">Follow-up: ${q}</p><div class="flex items-center gap-1.5 text-slate-400"><span class="animate-spin material-symbols-outlined text-[12px]">progress_activity</span><span class="text-[11px]">Thinking...</span></div></div>`;
       panel.scrollTop = panel.scrollHeight;
       const context = lastAnalysisData ? `Previous TB screening result: Prediction=${lastAnalysisData.prediction}, Probability=${lastAnalysisData.probability}, Uncertainty=${lastAnalysisData.uncertainty}. Region=${lastAnalysisData.region || 'lung field'}. ` : '';
       try {
@@ -721,7 +720,7 @@
         if (lastDiv) {
           const thinkEl = lastDiv.querySelector('.flex.items-center'); if (thinkEl) thinkEl.remove();
           lastDiv.innerHTML += formatExplanation(d.response || d.error || 'No response');
-          if (d.safety_validated !== false) lastDiv.innerHTML += '<div class="flex items-center gap-1 mt-1"><span class="text-[10px]">🛡️</span><span class="text-[10px] text-primary font-medium">MedGemma Validated</span></div>';
+          if (d.safety_validated !== false) lastDiv.innerHTML += '<div class="flex items-center gap-1 mt-1"><span class="text-[10px]">🛡️</span><span class="text-[10px] text-primary font-medium">Gemini Validated</span></div>';
         }
       } catch (e) { panel.innerHTML += '<p class="text-xs text-red-500">Error: ' + e.message + '</p>'; }
       panel.scrollTop = panel.scrollHeight;
@@ -733,9 +732,7 @@
       if (pred === '—') { alert('Run analysis first.'); return; }
       const prob = document.getElementById('tbProbValue').textContent, conf = document.getElementById('confidenceValue').textContent, unc = document.getElementById('uncertaintyValue').textContent;
       // Get rendered HTML directly from both panels
-      const reasoningHtml = document.getElementById('mistralVisionReasoning').innerHTML +
-        '<br/>' +
-        document.getElementById('mistralRagReasoning').innerHTML;
+      const reasoningHtml = document.getElementById('clinicalSynthesis').innerHTML;
       const symptoms = document.getElementById('symptomsText').value;
       const now = new Date().toLocaleString();
       const isTB = pred === 'Positive';
@@ -767,16 +764,18 @@ body{font-family:'Inter',sans-serif;color:#1e293b;padding:40px 50px;max-width:90
 .img-card{border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;text-align:center;background:#f8fafc}
 .img-card img{width:100%;height:200px;object-fit:contain;background:#000}
 .img-card .img-label{padding:6px 0;font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em}
-.reasoning{font-size:12px;line-height:1.7}
-.reasoning h3{font-size:13px;font-weight:700;color:#1e293b;margin:12px 0 4px;border-bottom:1px solid #f1f5f9;padding-bottom:3px}
-.reasoning h4{font-size:11px;font-weight:700;color:#0d80f2;margin:8px 0 2px;text-transform:uppercase;letter-spacing:0.03em}
-.reasoning p{margin-bottom:4px}
-.reasoning ul,.reasoning ol{margin:2px 0 6px 14px}
-.reasoning li{margin-bottom:2px}
+.reasoning{font-size:12px;line-height:1.8}
+.reasoning h2{font-size:14px;font-weight:700;color:#0d80f2;margin:16px 0 8px;border-bottom:2px solid #0d80f2;padding-bottom:4px;page-break-after:avoid}
+.reasoning h3{font-size:13px;font-weight:700;color:#1e293b;margin:14px 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px;page-break-after:avoid}
+.reasoning h4{font-size:11px;font-weight:700;color:#0d80f2;margin:10px 0 4px;text-transform:uppercase;letter-spacing:0.03em;page-break-after:avoid}
+.reasoning p{margin-bottom:8px;text-align:justify}
+.reasoning ul,.reasoning ol{margin:6px 0 10px 18px;line-height:1.7}
+.reasoning li{margin-bottom:4px}
 .reasoning strong{color:#1e293b;font-weight:600}
-.reasoning table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
-.reasoning th,.reasoning td{padding:6px;border:1px solid #e2e8f0;text-align:left}
-.reasoning th{background:#f8fafc}
+.reasoning table{width:100%;border-collapse:collapse;margin:10px 0;font-size:11px;page-break-inside:avoid}
+.reasoning th,.reasoning td{padding:8px;border:1px solid #e2e8f0;text-align:left;vertical-align:top}
+.reasoning th{background:#f8fafc;font-weight:600}
+.reasoning hr{border:none;border-top:1px solid #e2e8f0;margin:12px 0}
 .disclaimer{background:#fef3c7;border:1.5px solid #fbbf24;border-radius:8px;padding:10px 14px;margin-top:14px;font-size:10px;color:#92400e}
 .footer{text-align:center;border-top:2px solid #e2e8f0;padding-top:14px;margin-top:20px;padding-bottom:10px}
 .footer p{color:#94a3b8;font-size:9px;line-height:1.5}
@@ -794,9 +793,9 @@ body{font-family:'Inter',sans-serif;color:#1e293b;padding:40px 50px;max-width:90
 ${(origSrc || gcSrc) ? `<div class="images-grid">${origSrc ? `<div class="img-card"><img src="${origSrc}" alt="Input X-ray"/><div class="img-label">Input Chest X-Ray</div></div>` : ''}
 ${gcSrc ? `<div class="img-card"><img src="${gcSrc}" alt="Grad-CAM++"/><div class="img-label">Grad-CAM++ Attention Map</div></div>` : ''}</div>` : ''}
 ${symptoms ? `<div class="section"><h2>Reported Symptoms</h2><p style="font-size:11px">${symptoms}</p></div>` : ''}
-<div class="section"><h2>AI Clinical Reasoning &mdash; Mistral Large 3 + MedGemma</h2><div class="reasoning">${reasoningHtml}</div></div>
+<div class="section"><h2>Comprehensive Clinical Synthesis &mdash; CNN + Gemini 2.5 Flash + Mistral Large + RAG</h2><div class="reasoning">${reasoningHtml}</div></div>
 <div class="disclaimer">&#x26A0;&#xFE0F; <strong>Disclaimer:</strong> This report is AI-generated for screening support only. All findings require confirmation through microbiological testing and clinical assessment by a qualified professional.</div>
-<div class="footer"><p>TB-Guard-XAI v2.0 | Mistral AI Hackathon 2026 | Powered by Mistral Large 3 + MedGemma</p><p>&copy; 2026 TB-Guard-XAI. Medical Grade Prototype.</p></div>
+<div class="footer"><p>TB-Guard-XAI v2.0 | Mistral AI Hackathon 2026 | Architecture: CNN Ensemble + Gemini 2.5 Flash Validator + Mistral Large + WHO RAG</p><p>&copy; 2026 TB-Guard-XAI. Medical Grade Prototype.</p></div>
 </div></body></html>`;
 
       const iframe = document.createElement('iframe');
