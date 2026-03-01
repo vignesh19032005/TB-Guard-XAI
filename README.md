@@ -385,7 +385,7 @@ python backend.py
 **AUC: 0.994** - Exceptional discrimination between TB and Normal cases
 
 #### Reliability Calibration
-![Reliability Diagram]([reliability_diagram.png](https://github.com/vignesh19032005/TB-Guard-XAI/blob/4c1e26870b2b2a16254605269689c7a497ec75aa/calibration.png))
+![Reliability Diagram](https://github.com/vignesh19032005/TB-Guard-XAI/blob/4c1e26870b2b2a16254605269689c7a497ec75aa/calibration.png)
 **ECE: 0.173** - Well-calibrated confidence predictions
 
 #### Uncertainty Distribution
