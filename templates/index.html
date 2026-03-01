@@ -285,7 +285,7 @@
               <div class="pipeline-step flex flex-col items-center gap-1.5 opacity-40">
                 <div
                   class="step-dot size-2.5 rounded-full bg-slate-400 dark:bg-slate-600 ring-3 ring-white dark:ring-background-dark transition-all">
-                </div><span class="pipeline-label text-[9px] font-medium text-slate-500 uppercase">Grad-CAM</span>
+                </div><span class="pipeline-label text-[9px] font-medium text-slate-500 uppercase">Grad-CAM++</span>
               </div>
               <div class="pipeline-step flex flex-col items-center gap-1.5 opacity-40">
                 <div
@@ -303,11 +303,15 @@
 
         <!-- RESULTS (hidden until analysis) -->
         <div id="resultsSection" class="hidden space-y-4 animate-in">
+
+          <h2
+            class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2 px-1 border-b border-slate-200 dark:border-slate-800 pb-1">
+            Phase 1: Deep Learning CNN Analysis</h2>
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
             <!-- METRICS -->
             <div class="lg:col-span-3 space-y-3">
               <div id="predictionCard" class="glass-panel p-3 rounded-xl border-l-4 border-l-slate-300">
-                <p class="text-slate-500 text-[10px] uppercase font-semibold">Primary Prediction</p>
+                <p class="text-slate-500 text-[10px] uppercase font-semibold">CNN Primary Prediction</p>
                 <h4 id="predictionLabel" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">—</h4>
                 <p id="predictionSub" class="text-xs mt-0.5">Awaiting</p>
               </div>
@@ -319,19 +323,17 @@
                     style="width:0%"></div>
                 </div>
               </div>
-              <div class="glass-panel p-3 rounded-xl border-l-4 border-l-indigo-500 bg-indigo-500/5">
-                <p class="text-slate-500 text-[10px] uppercase font-semibold">Confidence</p>
-                <h4 id="confidenceValue" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">—</h4>
-                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1 mt-1.5 rounded-full overflow-hidden">
-                  <div id="confidenceBar" class="bg-indigo-500 h-full rounded-full transition-all duration-700"
-                    style="width:0%"></div>
+              <div class="flex gap-3">
+                <div class="glass-panel p-3 rounded-xl border-l-4 border-l-indigo-500 bg-indigo-500/5 flex-1">
+                  <p class="text-slate-500 text-[10px] uppercase font-semibold">Confidence</p>
+                  <h4 id="confidenceValue" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">—</h4>
                 </div>
-              </div>
-              <div id="uncertaintyCard"
-                class="glass-panel p-3 rounded-xl border-l-4 border-l-yellow-500 bg-yellow-500/5">
-                <p class="text-slate-500 text-[10px] uppercase font-semibold">Uncertainty (MC Dropout)</p>
-                <h4 id="uncertaintyValue" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">—</h4>
-                <p id="uncertaintySub" class="text-yellow-600 dark:text-yellow-300 text-xs mt-0.5">—</p>
+                <div id="uncertaintyCard"
+                  class="glass-panel p-3 rounded-xl border-l-4 border-l-yellow-500 bg-yellow-500/5 flex-1">
+                  <p class="text-slate-500 text-[10px] uppercase font-semibold">Uncertainty</p>
+                  <h4 id="uncertaintyValue" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">—</h4>
+                  <p id="uncertaintySub" class="text-yellow-600 dark:text-yellow-300 text-[10px] mt-0.5">—</p>
+                </div>
               </div>
             </div>
 
@@ -340,10 +342,14 @@
               <div
                 class="flex items-center justify-between px-3 py-2 border-b border-slate-200 dark:border-slate-700/50">
                 <h3 class="font-semibold text-slate-900 dark:text-white text-xs flex items-center gap-1.5"><span
-                    class="material-symbols-outlined text-purple-500 text-base">visibility</span>Explainable AI View
+                    class="material-symbols-outlined text-purple-500 text-base">visibility</span>CNN Explanation
+                  (Grad-CAM++)
                 </h3>
+                <span id="cnnRegionText"
+                  class="text-[9px] font-mono text-slate-500 dark:text-slate-400 hidden bg-slate-200/50 dark:bg-slate-800/50 px-2 py-0.5 rounded truncate max-w-[200px]"
+                  title=""></span>
               </div>
-              <div class="flex-1 relative bg-slate-100 dark:bg-slate-900 grid grid-cols-2 gap-px min-h-[260px]">
+              <div class="flex-1 relative bg-slate-100 dark:bg-slate-900 grid grid-cols-2 gap-px min-h-[200px]">
                 <div class="relative overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-800">
                   <div
                     class="absolute top-1.5 left-1.5 z-10 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] text-white">
@@ -357,8 +363,8 @@
                 <div class="relative overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-800">
                   <div
                     class="absolute top-1.5 left-1.5 z-10 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] text-white">
-                    Grad-CAM</div>
-                  <img id="resultGradcam" class="w-full h-full object-contain hidden" alt="Grad-CAM" />
+                    Grad-CAM++</div>
+                  <img id="resultGradcam" class="w-full h-full object-contain hidden" alt="Grad-CAM++" />
                   <div id="skelGradcam" class="flex flex-col items-center gap-2 text-slate-400 dark:text-slate-500">
                     <span class="material-symbols-outlined text-3xl">colorize</span><span class="text-[10px]">Heatmap
                       will appear here</span>
@@ -366,25 +372,53 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- MISTRAL REASONING -->
+          <h2
+            class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mt-6 pt-2 px-1 border-b border-indigo-200 dark:border-indigo-900 pb-1 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">psychology</span>Phase 2: Mistral Generative AI Analysis
+          </h2>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <!-- MISTRAL VISION -->
             <div
-              class="lg:col-span-4 glass-panel rounded-2xl p-4 flex flex-col border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.08)]">
+              class="lg:col-span-6 glass-panel rounded-2xl p-4 flex flex-col border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.08)] bg-indigo-50/50 dark:bg-indigo-900/10">
               <div class="flex items-center gap-2 mb-2">
                 <div
-                  class="size-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  class="size-7 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-white text-base">visibility</span>
+                </div>
+                <div>
+                  <h3 class="text-slate-900 dark:text-white font-bold text-xs">Mistral Independent Vision</h3>
+                  <p class="text-indigo-600 dark:text-indigo-300 text-[9px]">Pixtral-Large-Latest Second Opinion</p>
+                </div>
+              </div>
+              <div id="mistralVisionReasoning"
+                class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[220px] text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed">
+                <!-- Vision text injected here -->
+                <p class="text-slate-400 italic text-xs">Run analysis to see vision assessment...</p>
+              </div>
+            </div>
+
+            <!-- MISTRAL RAG -->
+            <div
+              class="lg:col-span-6 glass-panel rounded-2xl p-4 flex flex-col border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.08)]">
+              <div class="flex items-center gap-2 mb-2">
+                <div
+                  class="size-7 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
                   <span class="material-symbols-outlined text-white text-base">psychology</span>
                 </div>
                 <div>
-                  <h3 class="text-slate-900 dark:text-white font-bold text-xs">Clinical Reasoning</h3>
-                  <p class="text-indigo-600 dark:text-indigo-300 text-[9px]">Mistral Vision + RAG + Grad-CAM</p>
+                  <h3 class="text-slate-900 dark:text-white font-bold text-xs">Clinical Synthesis</h3>
+                  <p class="text-purple-600 dark:text-purple-300 text-[9px]">RAG Guidelines + Multimodal Reasoning</p>
                 </div>
               </div>
-              <div id="mistralReasoning"
-                class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[280px] text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed">
-                <!-- Vision separator explicitly rendered here if analyzed -->
-                <p class="text-slate-400 italic text-xs">Run analysis to see clinical reasoning...</p>
+              <div id="mistralRagReasoning"
+                class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[160px] text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed">
+                <!-- RAG text injected here -->
+                <p class="text-slate-400 italic text-xs">Run analysis to see clinical synthesis...</p>
               </div>
+
               <!-- FOLLOW-UP -->
               <div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700/50">
                 <div class="flex gap-1.5">
@@ -529,7 +563,7 @@
 
       // Live animation effect for pipeline
       const animatePipeline = async () => {
-        const msgs = ['Pre-processing image...', 'Running neural network inference...', 'Generating Grad-CAM heatmap...', 'Synthesizing clinical knowledge...', 'Reasoning with Mistral LLM...'];
+        const msgs = ['Pre-processing image...', 'Running neural network inference...', 'Generating Grad-CAM++ heatmap...', 'Synthesizing clinical knowledge...', 'Reasoning with Mistral LLM...'];
         for (let i = 0; i < 5; i++) {
           if (pipelineDone) break;
           steps[i].classList.remove('opacity-40');
@@ -588,7 +622,8 @@
     function resetResults() {
       document.getElementById('skelOriginal').classList.remove('hidden'); document.getElementById('skelGradcam').classList.remove('hidden');
       document.getElementById('resultOriginal').classList.add('hidden'); document.getElementById('resultGradcam').classList.add('hidden');
-      document.getElementById('mistralReasoning').innerHTML = '<div class="flex items-center gap-2 text-slate-400"><span class="animate-spin material-symbols-outlined text-sm">progress_activity</span><span class="text-xs">Analyzing...</span></div>';
+      document.getElementById('mistralVisionReasoning').innerHTML = '<div class="flex items-center gap-2 text-slate-400"><span class="animate-spin material-symbols-outlined text-sm">progress_activity</span><span class="text-xs">Analyzing Image...</span></div>';
+      document.getElementById('mistralRagReasoning').innerHTML = '<div class="flex items-center gap-2 text-slate-400"><span class="animate-spin material-symbols-outlined text-sm">progress_activity</span><span class="text-xs">Synthesizing Clinical Evidence...</span></div>';
     }
 
     function displayResults(data) {
@@ -601,21 +636,37 @@
       ps.className = 'text-xs mt-0.5 ' + (isTB ? 'text-red-500' : 'text-emerald-500');
 
       document.getElementById('tbProbValue').textContent = (prob * 100).toFixed(1) + '%'; document.getElementById('tbProbBar').style.width = (prob * 100) + '%';
-      document.getElementById('confidenceValue').textContent = (confidence * 100).toFixed(1) + '%'; document.getElementById('confidenceBar').style.width = (confidence * 100) + '%';
+      document.getElementById('confidenceValue').textContent = (confidence * 100).toFixed(1) + '%';
+      const cbElement = document.getElementById('confidenceBar'); if (cbElement) cbElement.style.width = (confidence * 100) + '%';
       document.getElementById('uncertaintyValue').textContent = uncertainty;
       const us = document.getElementById('uncertaintySub'), uc = document.getElementById('uncertaintyCard');
-      if (uncertainty === 'Low') { us.textContent = 'High Reliability'; uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-emerald-500 bg-emerald-500/5'; }
-      else if (uncertainty === 'Medium') { us.textContent = 'Moderate — Acceptable Variance'; uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-yellow-500 bg-yellow-500/5'; }
-      else { us.textContent = 'Unreliable — Review Required'; uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-red-500 bg-red-500/5'; }
+      if (uncertainty === 'Low') { us.textContent = 'High Reliability'; uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-emerald-500 bg-emerald-500/5 flex-1'; }
+      else if (uncertainty === 'Medium') { us.textContent = 'Moderate — Acceptable Variance'; uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-yellow-500 bg-yellow-500/5 flex-1'; }
+      else { us.textContent = 'Unreliable — Review Required'; uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-red-500 bg-red-500/5 flex-1'; }
 
       // Images
       const orig = document.getElementById('resultOriginal'), gc = document.getElementById('resultGradcam');
       if (document.getElementById('previewImage').src) { orig.src = document.getElementById('previewImage').src; orig.classList.remove('hidden'); document.getElementById('skelOriginal').classList.add('hidden'); }
       if (data.gradcam_image) { gc.src = 'data:image/png;base64,' + data.gradcam_image; gc.classList.remove('hidden'); document.getElementById('skelGradcam').classList.add('hidden'); }
-      else { document.getElementById('skelGradcam').innerHTML = '<span class="text-slate-400 text-xs">Grad-CAM unavailable</span>'; }
+      else { document.getElementById('skelGradcam').innerHTML = '<span class="text-slate-400 text-xs">Grad-CAM++ unavailable</span>'; }
 
-      // Reasoning
-      if (data.clinical_explanation) document.getElementById('mistralReasoning').innerHTML = formatExplanation(data.clinical_explanation);
+      // Update CNN region tag
+      const regionEl = document.getElementById('cnnRegionText');
+      if (data.gradcam_region && data.gradcam_region !== 'N/A') {
+        regionEl.textContent = 'CNN Area: ' + data.gradcam_region;
+        regionEl.title = data.gradcam_region;
+        regionEl.classList.remove('hidden');
+      } else {
+        regionEl.classList.add('hidden');
+      }
+
+      // Reasoning — backend sends vision_analysis and clinical_synthesis as separate fields
+      document.getElementById('mistralVisionReasoning').innerHTML = formatExplanation(
+        data.vision_analysis || "Vision analysis was not returned by the model."
+      );
+      document.getElementById('mistralRagReasoning').innerHTML = formatExplanation(
+        data.clinical_synthesis || "Clinical synthesis was not returned by the model."
+      );
     }
 
     /* ── MARKDOWN → CLEAN HTML ──────────────────── */
@@ -659,7 +710,7 @@
     /* ── FOLLOW-UP QUESTIONS ────────────────────── */
     async function askFollowup() {
       const input = document.getElementById('followupInput'); const q = input.value.trim(); if (!q) return; input.value = '';
-      const panel = document.getElementById('mistralReasoning');
+      const panel = document.getElementById('mistralRagReasoning');
       panel.innerHTML += `<div class="mt-3 pt-2 border-t border-indigo-200 dark:border-indigo-500/20"><p class="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1">Follow-up: ${q}</p><div class="flex items-center gap-1.5 text-slate-400"><span class="animate-spin material-symbols-outlined text-[12px]">progress_activity</span><span class="text-[11px]">Thinking...</span></div></div>`;
       panel.scrollTop = panel.scrollHeight;
       const context = lastAnalysisData ? `Previous TB screening result: Prediction=${lastAnalysisData.prediction}, Probability=${lastAnalysisData.probability}, Uncertainty=${lastAnalysisData.uncertainty}. Region=${lastAnalysisData.region || 'lung field'}. ` : '';
@@ -681,8 +732,10 @@
       const pred = document.getElementById('predictionLabel').textContent;
       if (pred === '—') { alert('Run analysis first.'); return; }
       const prob = document.getElementById('tbProbValue').textContent, conf = document.getElementById('confidenceValue').textContent, unc = document.getElementById('uncertaintyValue').textContent;
-      const reasoningEl = document.getElementById('mistralReasoning');
-      const reasoningHtml = reasoningEl.innerHTML; // get rendered HTML directly
+      // Get rendered HTML directly from both panels
+      const reasoningHtml = document.getElementById('mistralVisionReasoning').innerHTML +
+        '<br/>' +
+        document.getElementById('mistralRagReasoning').innerHTML;
       const symptoms = document.getElementById('symptomsText').value;
       const now = new Date().toLocaleString();
       const isTB = pred === 'Positive';
@@ -739,7 +792,7 @@ body{font-family:'Inter',sans-serif;color:#1e293b;padding:40px 50px;max-width:90
 <div class="metric"><div class="metric-label">Uncertainty</div><div class="metric-value">${unc}</div></div>
 </div>
 ${(origSrc || gcSrc) ? `<div class="images-grid">${origSrc ? `<div class="img-card"><img src="${origSrc}" alt="Input X-ray"/><div class="img-label">Input Chest X-Ray</div></div>` : ''}
-${gcSrc ? `<div class="img-card"><img src="${gcSrc}" alt="Grad-CAM"/><div class="img-label">Grad-CAM Attention Map</div></div>` : ''}</div>` : ''}
+${gcSrc ? `<div class="img-card"><img src="${gcSrc}" alt="Grad-CAM++"/><div class="img-label">Grad-CAM++ Attention Map</div></div>` : ''}</div>` : ''}
 ${symptoms ? `<div class="section"><h2>Reported Symptoms</h2><p style="font-size:11px">${symptoms}</p></div>` : ''}
 <div class="section"><h2>AI Clinical Reasoning &mdash; Mistral Large 3 + MedGemma</h2><div class="reasoning">${reasoningHtml}</div></div>
 <div class="disclaimer">&#x26A0;&#xFE0F; <strong>Disclaimer:</strong> This report is AI-generated for screening support only. All findings require confirmation through microbiological testing and clinical assessment by a qualified professional.</div>

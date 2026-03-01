@@ -12,7 +12,7 @@ short_description: TB Clinical Triage with Deep Learning, RAG & Explainable AI
 
 **Built for the Mistral AI Worldwide Hackathon 2026**
 
-> TB-Guard-XAI is an explainable, multimodal clinical triage engine. Uniting PyTorch deep learning with Mistral, Bayesian Uncertainty mathematically detects AI "guessing," while Grad-CAM heatmaps highlight infections. Mistral Vision adds a 2nd opinion, Voxtral transcribes voice, and RAG outputs MedGemma-safe, WHO-backed clinical reports.
+> TB-Guard-XAI is an explainable, multimodal clinical triage engine. Uniting PyTorch deep learning with Mistral, Bayesian Uncertainty mathematically detects AI "guessing," while Grad-CAM++ heatmaps highlight infections. Mistral Vision adds a 2nd opinion, Voxtral transcribes voice, and RAG outputs MedGemma-safe, WHO-backed clinical reports.
 
 [![Hugging Face Space](https://img.shields.io/badge/🤗_Space-Live_Demo-blue)](https://huggingface.co/spaces/mistral-hackaton-2026/TB-Guard-XAI)
 [![Demo Video](https://img.shields.io/badge/🎬_Video-Watch_Pitch-red)](https://youtu.be/UyxZCp2q7TM)
@@ -57,7 +57,7 @@ Beneath the LLMs lies a robust computer vision pipeline designed for maximum exp
 * **Bayesian Deep Learning: Monte Carlo (MC) Dropout**
   * *What is it?* The crown jewel of our safety mechanism. Standard AI evaluates an image once. MC Dropout forces our neural network to evaluate the same X-Ray **20 different times**, randomly turning off ("dropping out") different neurons during each pass.
   * *Why use it?* If the model is recognizing true TB features, the 20 predictions will be nearly identical (Low Variance). But if the model is guessing on an anomalous image, the 20 predictions will wildly disagree (High Variance). When high variance is detected, the system overrides the probability and flags **"Unreliable — Human Review Required,"** legally protecting the clinic from false AI confidence.
-* **Explainable AI: Grad-CAM (Gradient-weighted Class Activation Mapping)**
+* **Explainable AI: Grad-CAM++ (Gradient-weighted Class Activation Mapping)**
   * *What is it?* An algorithm that traces the classification logic backwards through the CNN to find exactly which pixels activated the "Tuberculosis" neurons.
   * *Why use it?* It generates a topological heatmap over the X-Ray. Doctors don't have to trust the AI blindly; they can physically see exactly what the AI is looking at. 
 
@@ -72,7 +72,7 @@ Beneath the LLMs lies a robust computer vision pipeline designed for maximum exp
 * **Drag-and-Drop X-Ray Analysis** with Native Bayesian Uncertainty bounds.
 * **Mistral Vision Multimodal Verification** natively embedded in the UI.
 * **Voice-Activated Clinical Context** powered by Voxtral.
-* **Grad-CAM Topological Visualizations.**
+* **Grad-CAM++ Topological Visualizations.**
 * **Built-in AI Respiratory Chatbot.**
 * **One-Click Printable PDF Triage Reports** for lab handover.
 
