@@ -394,11 +394,11 @@ python backend.py
 **AUC: 0.994** - Exceptional discrimination between TB and Normal cases
 
 #### Reliability Calibration
-![Reliability Diagram](reliability_diagram.png)
+![Reliability Diagram](https://github.com/vignesh19032005/TB-Guard-XAI/blob/4c1e26870b2b2a16254605269689c7a497ec75aa/calibration.png)
 **ECE: 0.173** - Well-calibrated confidence predictions
 
 #### Uncertainty Distribution
-![Uncertainty Distribution](uncertainty_distribution.png)
+![Uncertainty Distribution](https://github.com/vignesh19032005/TB-Guard-XAI/blob/a16d60b0b611a5143aecc9a3403e908183671884/uncertainty_dist.png)
 Clear separation between TB and Normal cases in uncertainty space
 
 </div>
@@ -635,7 +635,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## ⚠️ Clinical Disclaimer
 
-**TB-Guard-XAI is a research prototype and clinical decision support tool. It is NOT a medical device and is NOT approved for clinical use.**
+**TB-Guard-XAI is a research prototype and clinical decision support tool. It is NOT a medical device and is NOT yet approved for clinical use.**
 
 - This system is designed to **assist** trained medical professionals, not replace them
 - All positive or uncertain results **MUST** be confirmed with:
