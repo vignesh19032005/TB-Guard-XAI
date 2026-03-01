@@ -22,7 +22,7 @@ temp_uploads/
 archive/
 
 # Qdrant DB
-qdrant_db/
+# qdrant_db/ (Commented out so it uploads to Hugging Face)
 
 # IDE
 .vscode/
