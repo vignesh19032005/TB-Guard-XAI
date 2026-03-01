@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>TB-Guard-XAI — AI Medical Consult</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d7ff2",
+                        "background-light": "#f0f4f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#182635",
+                        "surface-darker": "#0d141c",
+                    },
+                    fontFamily: { "display": ["Inter", "sans-serif"], "sans": ["Inter", "sans-serif"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    boxShadow: { 'glow-blue': '0 0 10px rgba(13,127,242,0.3)', 'glow-green': '0 0 10px rgba(16,185,129,0.3)' }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .typing-dot {
+            animation: blink 1.4s infinite both;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+
+            0%,
+            80%,
+            100% {
+                opacity: 0
+            }
+
+            40% {
+                opacity: 1
+            }
+        }
+
+        .recording-pulse {
+            animation: recPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes recPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5)
+            }
+
+            50% {
+                box-shadow: 0 0 0 12px rgba(239, 68, 68, 0)
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 h-screen overflow-hidden flex transition-colors duration-300">
+
+    <!-- SIDEBAR -->
+    <aside
+        class="w-64 bg-white dark:bg-[#101a23] border-r border-slate-200 dark:border-slate-800 flex-col justify-between hidden md:flex h-full shrink-0 transition-colors duration-300">
+        <div class="flex flex-col gap-4 p-4">
+            <div class="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-slate-800/50">
+                <div
+                    class="size-10 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20 text-white">
+                    <span class="material-symbols-outlined text-2xl">medical_services</span>
+                </div>
+                <div>
+                    <h1 class="text-slate-900 dark:text-white text-sm font-bold leading-tight">TB-Guard-XAI</h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-normal">Mistral Hackathon '26</p>
+                </div>
+            </div>
+            <nav class="flex flex-col gap-1">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    href="/">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                    <span class="text-sm font-medium">Triage Dashboard</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 dark:bg-surface-dark text-primary dark:text-white border border-blue-100 dark:border-slate-700/50 shadow-sm"
+                    href="/consult">
+                    <span class="material-symbols-outlined text-[20px] text-primary">chat_bubble</span>
+                    <span class="text-sm font-semibold">AI Consult</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    href="/gallery">
+                    <span class="material-symbols-outlined text-[20px]">collections</span>
+                    <span class="text-sm font-medium">Demo Gallery</span>
+                </a>
+            </nav>
+        </div>
+        <div class="p-3 border-t border-slate-200 dark:border-slate-800/50">
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] text-slate-400 dark:text-slate-500">
+                <span class="material-symbols-outlined text-sm">info</span> v2.0 — Medical Prototype
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main
+        class="flex-1 flex flex-col h-full bg-background-light dark:bg-background-dark relative transition-colors duration-300">
+
+        <!-- HEADER -->
+        <div
+            class="h-14 px-6 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-surface-darker/50 backdrop-blur-md flex items-center justify-between shrink-0 sticky top-0 z-10 transition-colors duration-300">
+            <div class="flex flex-col">
+                <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    Mistral AI Respiratory Consult
+                    <span
+                        class="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] border border-green-200 dark:border-green-500/20 font-medium uppercase tracking-wider">Live</span>
+                </h2>
+                <p class="text-slate-500 dark:text-slate-400 text-[11px]">Powered by Mistral Large 3 • MedGemma
+                    Validated</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div
+                    class="hidden sm:flex items-center px-3 py-1 rounded-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-slate-700/50 gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-[11px] text-slate-600 dark:text-slate-300 font-medium">System Online</span>
+                </div>
+                <button
+                    class="flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-surface-dark hover:border-primary/50 transition-all"
+                    onclick="toggleTheme()">
+                    <span
+                        class="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">dark_mode</span>
+                    <span class="text-[11px] font-medium text-slate-600 dark:text-slate-300">Theme</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CHAT AREA -->
+        <div id="chatContainer" class="flex-1 overflow-y-auto scrollbar-hide p-4 md:p-6 lg:px-24 flex flex-col gap-5">
+
+            <!-- Welcome Banner -->
+            <div
+                class="bg-gradient-to-br from-white to-slate-50 dark:from-surface-dark dark:to-surface-darker rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-lg">
+                <div class="flex flex-col gap-3">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">smart_toy</span>
+                        Mistral AI Clinical Consult
+                    </h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                        Ask any chest or respiratory medical question. All clinical pathways and differential diagnoses
+                        are generated using the vast medical knowledge of <strong>Mistral Large 3</strong>.
+                        <br><span class="text-xs text-slate-500 dark:text-slate-500 mt-1 inline-block"><span
+                                class="material-symbols-outlined text-[12px] text-emerald-500 align-text-bottom">verified</span>
+                            Monitored for clinical safety compliance by MedGemma guardrails.</span>
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs border border-slate-200 dark:border-slate-700">TB
+                            Screening</span>
+                        <span
+                            class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs border border-slate-200 dark:border-slate-700">Pulmonology</span>
+                        <span
+                            class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs border border-slate-200 dark:border-slate-700">Differential
+                            Diagnosis</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages will be inserted here -->
+            <div id="messagesArea" class="flex flex-col gap-5 pb-48"></div>
+
+        </div>
+
+        <!-- QUICK ACTIONS + INPUT BAR -->
+        <div
+            class="absolute bottom-0 left-0 w-full bg-white/80 dark:bg-surface-darker/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 p-4 pb-5 transition-colors duration-300">
+            <div class="max-w-[900px] mx-auto relative">
+                <!-- Quick action chips -->
+                <div class="flex gap-2 overflow-x-auto w-full pb-2 scrollbar-hide px-1 mb-1">
+                    <button onclick="quickAsk('What are the early warning signs of tuberculosis?')"
+                        class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm">TB
+                        Symptoms?</button>
+                    <button
+                        onclick="quickAsk('Patient has severe chest pain while breathing with coughing. Differential diagnosis?')"
+                        class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm">Chest
+                        Pain DDx</button>
+                    <button
+                        onclick="quickAsk('What drug interactions should I check for rifampicin-based TB treatment?')"
+                        class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm">Rifampicin
+                        Interactions</button>
+                    <button
+                        onclick="quickAsk('Patient presents with persistent cough for 3 weeks, night sweats, and weight loss. Assess TB risk.')"
+                        class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm">TB
+                        Risk Assessment</button>
+                </div>
+                <!-- Input bar -->
+                <div
+                    class="flex items-end gap-2 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-xl p-2 shadow-lg ring-1 ring-black/5 dark:ring-white/5 focus-within:ring-primary/50 focus-within:border-primary/50 transition-all">
+                    <textarea id="chatInput"
+                        class="w-full bg-transparent border-none text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:ring-0 resize-none py-2.5 px-2 max-h-32"
+                        placeholder="Ask about symptoms, treatment protocols, drug interactions..." rows="1"
+                        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+                    <div class="flex items-center gap-1 shrink-0 pb-1">
+                        <button id="chatVoiceBtn" onclick="toggleChatVoice()"
+                            class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-white hover:bg-primary transition-all">
+                            <span class="material-symbols-outlined" id="chatVoiceIcon">mic</span>
+                        </button>
+                        <button onclick="sendMessage()"
+                            class="p-2 rounded-lg bg-primary text-white hover:bg-blue-600 transition-colors shadow-lg shadow-primary/20">
+                            <span class="material-symbols-outlined">arrow_upward</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="text-center mt-1.5">
+                    <p class="text-[10px] text-slate-400">AI can make mistakes. Please verify critical medical
+                        information with a qualified professional.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let chatRecorder = null;
+        let chatAudioChunks = [];
+        let isChatRecording = false;
+        let isChatting = false;
+
+        function quickAsk(text) {
+            if (isChatting) return;
+            document.getElementById('chatInput').value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            if (isChatting) return;
+            const input = document.getElementById('chatInput');
+            const query = input.value.trim();
+            if (!query) return;
+            input.value = '';
+
+            isChatting = true;
+            input.disabled = true;
+
+            // Add user bubble
+            addMessage('user', query);
+
+            // Show typing indicator
+            const typingId = showTyping();
+
+            try {
+                const res = await fetch('/general_consult', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                const data = await res.json();
+                removeTyping(typingId);
+
+                if (data.error) {
+                    addMessage('ai', 'Sorry, an error occurred: ' + data.error, false);
+                } else {
+                    addMessage('ai', data.response, data.safety_validated);
+                }
+            } catch (e) {
+                removeTyping(typingId);
+                addMessage('ai', 'Network error: ' + e.message, false);
+            } finally {
+                isChatting = false;
+                input.disabled = false;
+                setTimeout(() => input.focus(), 10);
+            }
+        }
+
+        function addMessage(role, text, safetyValidated) {
+            const area = document.getElementById('messagesArea');
+            const container = document.getElementById('chatContainer');
+            const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+            if (role === 'user') {
+                const div = document.createElement('div');
+                div.className = 'flex justify-end items-end gap-3';
+                div.innerHTML = `
+      <div class="flex flex-col items-end max-w-[85%] md:max-w-[70%]">
+        <div class="flex items-center gap-2 mb-1 mr-1">
+          <span class="text-[11px] text-slate-500">${now}</span>
+          <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300">You</span>
+        </div>
+        <div class="bg-primary text-white p-4 rounded-2xl rounded-br-sm shadow-md text-sm leading-relaxed">${escapeHtml(text)}</div>
+      </div>`;
+                area.appendChild(div);
+            } else {
+                const isUnsafe = safetyValidated === false;
+                const badgeBorder = isUnsafe ? 'border-red-200 dark:border-red-500/30' : 'border-slate-200 dark:border-slate-700/50';
+                const leftBorder = isUnsafe ? '<div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>' : '';
+
+                // Format response text
+                const formattedText = formatResponse(text);
+
+                const div = document.createElement('div');
+                div.className = 'flex justify-start items-end gap-3';
+                div.innerHTML = `
+      <div class="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-700 shrink-0 flex items-center justify-center border border-emerald-400/30 shadow-glow-green">
+        <span class="material-symbols-outlined text-white text-[16px]">smart_toy</span>
+      </div>
+      <div class="flex flex-col items-start max-w-[95%] md:max-w-[80%]">
+        <div class="flex items-center gap-2 mb-1 ml-1">
+          <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">Mistral Large 3</span>
+          <span class="text-[11px] text-slate-500">${now}</span>
+        </div>
+        <div class="bg-white dark:bg-surface-dark border ${badgeBorder} text-slate-800 dark:text-slate-200 rounded-2xl rounded-bl-sm shadow-md overflow-hidden relative transition-colors duration-300">
+          ${leftBorder}
+          <div class="p-4 text-sm leading-relaxed space-y-2">${formattedText}</div>
+          <div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-2 border-t border-slate-200 dark:border-slate-700/50 flex flex-wrap items-center justify-between gap-2">
+            ${isUnsafe ?
+                        '<div class="flex items-center gap-2"><span class="text-lg">⚠️</span><span class="text-xs font-medium text-red-500">MedGemma: Consult Human Doctor</span></div>' :
+                        '<div class="flex items-center gap-2 px-2 py-1 rounded bg-blue-50 dark:bg-primary/10 border border-blue-200 dark:border-primary/20" style="box-shadow:0 0 10px rgba(13,127,242,0.3)"><span class="text-lg">🛡️</span><span class="text-xs font-medium text-primary">MedGemma Clinical Safety Validated</span></div>'
+                    }
+            <div class="flex items-center gap-2">
+              <button onclick="copyText(this)" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-slate-900 dark:hover:text-white" title="Copy"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+                area.appendChild(div);
+            }
+
+            // Scroll to bottom
+            setTimeout(() => container.scrollTop = container.scrollHeight, 100);
+        }
+
+        function formatResponse(text) {
+            let html = '', inUl = false, inOl = false, inTable = false;
+            text.split('\n').forEach(raw => {
+                const line = raw.trim();
+                if (!line) {
+                    if (inUl) { html += '</ul>'; inUl = false; }
+                    if (inOl) { html += '</ol>'; inOl = false; }
+                    if (inTable) { html += '</tbody></table></div>'; inTable = false; }
+                    return;
+                }
+
+                // Table parsing
+                if (line.startsWith('|') && line.endsWith('|')) {
+                    if (inUl) { html += '</ul>'; inUl = false; }
+                    if (inOl) { html += '</ol>'; inOl = false; }
+
+                    if (line.includes('---')) return; // Ignore divider
+
+                    if (!inTable) {
+                        html += '<div class="overflow-x-auto my-3 border border-slate-200 dark:border-slate-700/50 rounded-lg shadow-sm"><table class="w-full text-left text-[12.5px]">';
+                        inTable = true;
+                    }
+
+                    const cells = line.split('|').slice(1, -1);
+                    if (html.includes('<tbody>')) {
+                        html += '<tr class="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">';
+                        cells.forEach(c => html += `<td class="p-2.5 text-slate-700 dark:text-slate-300 font-medium">${cleanConsultMd(c.trim())}</td>`);
+                        html += '</tr>';
+                    } else {
+                        html += '<thead class="bg-slate-50 dark:bg-slate-800/80"><tr class="border-b border-slate-200 dark:border-slate-700">';
+                        cells.forEach(c => html += `<th class="p-2.5 font-bold text-slate-900 dark:text-white">${cleanConsultMd(c.trim())}</th>`);
+                        html += '</tr></thead><tbody>';
+                    }
+                    return;
+                }
+
+                if (inTable) { html += '</tbody></table></div>'; inTable = false; }
+
+                // Headers parsing
+                if (line.startsWith('#### ')) {
+                    if (inUl) { html += '</ul>'; inUl = false; } if (inOl) { html += '</ol>'; inOl = false; }
+                    html += `<h4 class="text-xs font-bold text-indigo-500 dark:text-indigo-400 mt-2 mb-1 uppercase tracking-wide">${cleanConsultMd(line.slice(5))}</h4>`; return;
+                }
+                if (line.startsWith('### ')) {
+                    if (inUl) { html += '</ul>'; inUl = false; } if (inOl) { html += '</ol>'; inOl = false; }
+                    html += `<h3 class="text-sm font-bold text-slate-900 dark:text-white mt-3 mb-1.5 border-b border-slate-200 dark:border-slate-700/50 pb-1">${cleanConsultMd(line.slice(4))}</h3>`; return;
+                }
+                if (line.startsWith('## ')) {
+                    if (inUl) { html += '</ul>'; inUl = false; } if (inOl) { html += '</ol>'; inOl = false; }
+                    html += `<h2 class="text-base font-bold text-slate-900 dark:text-white mt-3 mb-1">${cleanConsultMd(line.slice(3))}</h2>`; return;
+                }
+
+                // Bullets
+                if (line.startsWith('- ') || line.startsWith('• ') || line.startsWith('* ')) {
+                    if (inOl) { html += '</ol>'; inOl = false; }
+                    if (!inUl) { html += '<ul class="space-y-1 ml-4 list-disc marker:text-primary">'; inUl = true; }
+                    html += `<li class="text-[13px] leading-relaxed pl-1 mb-1.5">${cleanConsultMd(line.slice(2))}</li>`; return;
+                }
+
+                // Numbered
+                const nm = line.match(/^(\d+)\.\s+(.*)$/);
+                if (nm) {
+                    if (inUl) { html += '</ul>'; inUl = false; }
+                    if (!inOl) { html += '<ol class="space-y-1 ml-4 list-decimal marker:text-primary font-medium">'; inOl = true; }
+                    // Force the browser to render the correct number rather than resetting to 1
+                    html += `<li value="${nm[1]}" class="text-[14px] leading-relaxed pl-1 mt-2 mb-0.5"><span class="font-bold text-slate-800 dark:text-slate-100">${cleanConsultMd(nm[2])}</span></li>`; return;
+                }
+
+                // Paragraph
+                if (inUl) { html += '</ul>'; inUl = false; } if (inOl) { html += '</ol>'; inOl = false; }
+                html += `<p class="text-[13px] leading-relaxed mb-2">${cleanConsultMd(line)}</p>`;
+            });
+            if (inUl) html += '</ul>'; if (inOl) html += '</ol>'; if (inTable) html += '</tbody></table></div>';
+            return html;
+        }
+
+        function cleanConsultMd(t) {
+            return t.replace(/\*\*(.+?)\*\*/g, '<strong class="text-slate-900 dark:text-white font-semibold">$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/`(.+?)`/g, '<code class="bg-slate-100 dark:bg-slate-800 px-1 rounded text-red-500 font-mono text-[11px]">$1</code>');
+        }
+
+        function showTyping() {
+            const area = document.getElementById('messagesArea');
+            const id = 'typing-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'flex justify-start items-end gap-3';
+            div.innerHTML = `
+    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-700 shrink-0 flex items-center justify-center border border-emerald-400/30">
+      <span class="material-symbols-outlined text-white text-[16px]">smart_toy</span>
+    </div>
+    <div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700/50 px-5 py-4 rounded-2xl rounded-bl-sm shadow-md">
+      <div class="flex gap-1.5">
+        <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+        <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+        <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+      </div>
+    </div>`;
+            area.appendChild(div);
+            document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
+            return id;
+        }
+
+        function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        function copyText(btn) {
+            const text = btn.closest('.bg-white, .dark\\:bg-surface-dark').querySelector('.p-4').innerText;
+            navigator.clipboard.writeText(text);
+            btn.querySelector('span').textContent = 'check';
+            setTimeout(() => btn.querySelector('span').textContent = 'content_copy', 1500);
+        }
+
+        /* ── Voice Recording for Chat ──────────────────── */
+        async function toggleChatVoice() {
+            const btn = document.getElementById('chatVoiceBtn');
+            const icon = document.getElementById('chatVoiceIcon');
+            if (isChatRecording) {
+                chatRecorder.stop();
+                isChatRecording = false;
+                btn.classList.remove('recording-pulse', 'bg-red-500', 'text-white');
+                icon.textContent = 'mic';
+            } else {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    chatRecorder = new MediaRecorder(stream);
+                    chatAudioChunks = [];
+                    chatRecorder.ondataavailable = e => chatAudioChunks.push(e.data);
+                    chatRecorder.onstop = async () => {
+                        const blob = new Blob(chatAudioChunks, { type: 'audio/wav' });
+                        stream.getTracks().forEach(t => t.stop());
+                        icon.textContent = 'hourglass_top';
+                        const formData = new FormData();
+                        formData.append('file', blob, 'voice.wav');
+                        try {
+                            const res = await fetch('/transcribe', { method: 'POST', body: formData });
+                            const data = await res.json();
+                            if (data.transcript) {
+                                document.getElementById('chatInput').value = data.transcript;
+                                sendMessage();
+                            }
+                        } catch (e) { alert('Transcription failed.'); }
+                        icon.textContent = 'mic';
+                    };
+                    chatRecorder.start();
+                    isChatRecording = true;
+                    btn.classList.add('recording-pulse', 'bg-red-500', 'text-white');
+                    icon.textContent = 'stop';
+                } catch (e) { alert('Microphone access unavailable.'); }
+            }
+        }
+
+        /* ── Theme ──────────────────────────────────────── */
+        function toggleTheme() {
+            const h = document.documentElement;
+            h.classList.toggle('dark');
+            localStorage.setItem('theme', h.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'light') document.documentElement.classList.remove('dark');
+        });
+    </script>
+</body>
+
+</html>

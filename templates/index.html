@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>TB-Guard-XAI — AI Triage Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#0d80f2", "primary-dark": "#0a66c2", "background-light": "#f5f7f8", "background-dark": "#0f172a", "surface-dark": "#1e293b", "success": "#10b981", "warning": "#f59e0b", "danger": "#ef4444" }, fontFamily: { "display": ["Inter", "sans-serif"] }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" } } } }
+  </script>
+  <style>
+    .glass-panel {
+      border-width: 1px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 500ms ease-in-out;
+      background: rgba(255, 255, 255, 0.75);
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .dark .glass-panel {
+      background: rgba(30, 41, 59, 0.6);
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .glass-header {
+      border-bottom-width: 1px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: background-color 500ms, border-color 500ms, color 500ms;
+      background: rgba(255, 255, 255, 0.85);
+      border-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .dark .glass-header {
+      background: rgba(15, 23, 42, 0.85);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .glass-sidebar {
+      border-right-width: 1px;
+      transition: background-color 500ms, border-color 500ms, color 500ms;
+      background: #ffffff;
+      border-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .dark .glass-sidebar {
+      background: #101a23;
+      border-color: rgba(51, 65, 85, 0.5);
+    }
+
+    body {
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background-color: #334155;
+    }
+
+    .recording-pulse {
+      animation: recPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes recPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5)
+      }
+
+      50% {
+        box-shadow: 0 0 0 12px rgba(239, 68, 68, 0)
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .5
+      }
+    }
+
+    .skeleton {
+      background-color: #e2e8f0;
+      border-radius: 0.25rem;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .dark .skeleton {
+      background-color: #334155;
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 font-display min-h-screen overflow-hidden flex transition-colors duration-500">
+
+  <!-- SIDEBAR -->
+  <aside class="w-60 hidden md:flex flex-col glass-sidebar h-screen shrink-0 relative z-20">
+    <div class="p-5 flex items-center gap-3">
+      <div
+        class="size-9 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20 text-white">
+        <span class="material-symbols-outlined text-xl">medical_services</span>
+      </div>
+      <div>
+        <h1 class="text-slate-900 dark:text-white font-bold text-base leading-none">TB-Guard-XAI</h1>
+        <p class="text-slate-500 dark:text-slate-400 text-[10px] font-medium mt-0.5">Mistral Hackathon '26</p>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 flex flex-col gap-1 mt-1">
+      <a class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-[0_0_12px_rgba(13,128,242,0.12)]"
+        href="/"><span class="material-symbols-outlined text-[20px]">dashboard</span><span
+          class="font-semibold text-sm">Triage Dashboard</span></a>
+      <a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        href="/consult"><span
+          class="material-symbols-outlined text-[20px] group-hover:text-primary">chat_bubble</span><span
+          class="font-medium text-sm">AI Consult</span></a>
+      <a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group"
+        href="/gallery"><span
+          class="material-symbols-outlined text-[20px] group-hover:text-primary">collections</span><span
+          class="font-medium text-sm">Demo Gallery</span></a>
+    </nav>
+    <div class="p-3 border-t border-slate-200 dark:border-slate-700/50">
+      <div class="px-3 py-2 text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1"><span
+          class="material-symbols-outlined text-[12px]">info</span>v2.0 — Medical Prototype</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-screen overflow-hidden relative transition-colors duration-500">
+    <div
+      class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none">
+    </div>
+    <div
+      class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none">
+    </div>
+
+    <!-- HEADER -->
+    <header class="glass-header h-12 shrink-0 px-6 flex items-center justify-between z-10">
+      <h2 class="text-slate-900 dark:text-white font-semibold text-sm flex items-center gap-2"><span
+          class="material-symbols-outlined text-primary text-lg">radiology</span>TB Screening Terminal</h2>
+      <div class="flex items-center gap-3">
+        <button
+          class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary/50 px-2.5 py-1 rounded-full transition-all shadow-sm"
+          onclick="toggleTheme()">
+          <div class="relative size-4 overflow-hidden"><span
+              class="material-symbols-outlined absolute inset-0 text-amber-500 transform transition-transform duration-500 rotate-0 dark:rotate-90 dark:translate-y-8 text-[16px]">light_mode</span><span
+              class="material-symbols-outlined absolute inset-0 text-indigo-400 transform transition-transform duration-500 -translate-y-8 dark:translate-y-0 text-[16px]">dark_mode</span>
+          </div>
+          <span class="text-[11px] font-medium text-slate-600 dark:text-slate-300" id="themeLabel">Dark</span>
+        </button>
+        <div class="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+          <div class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></div><span
+            class="text-emerald-600 dark:text-emerald-500 text-[10px] font-bold uppercase tracking-wide">Online</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- SCROLLABLE -->
+    <div class="flex-1 overflow-y-auto p-5 pb-20 relative z-10 scroll-smooth">
+      <div class="max-w-7xl mx-auto space-y-4">
+
+        <!-- ROW 1: UPLOAD + SYMPTOMS -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- UPLOAD -->
+          <div class="lg:col-span-7 glass-panel rounded-2xl p-4 flex flex-col">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-slate-900 dark:text-white font-semibold text-sm flex items-center gap-2"><span
+                  class="material-symbols-outlined text-primary text-lg">upload_file</span>Chest X-Ray Input</h3>
+              <span
+                class="bg-slate-100 dark:bg-slate-800 text-[10px] text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 font-mono">.jpg
+                .png</span>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" class="hidden" />
+            <div id="dropZone"
+              class="border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-primary/50 hover:bg-primary/5 transition-all rounded-xl flex-1 min-h-[160px] flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden bg-slate-50/50 dark:bg-transparent">
+              <div id="uploadPrompt" class="flex flex-col items-center">
+                <div
+                  class="bg-white dark:bg-slate-800/50 p-3 rounded-full mb-2 group-hover:scale-110 transition-transform shadow-sm">
+                  <span
+                    class="material-symbols-outlined text-slate-400 text-3xl group-hover:text-primary">cloud_upload</span>
+                </div>
+                <p class="text-slate-700 dark:text-slate-300 font-medium text-sm">Drag & drop scan here</p>
+                <p class="text-slate-500 text-xs mt-0.5">or click to browse files</p>
+              </div>
+              <div id="previewContainer" class="hidden w-full h-full p-2"><img id="previewImage"
+                  class="w-full h-full object-contain rounded-lg max-h-[200px] mx-auto" alt="X-ray preview" /></div>
+            </div>
+            <button id="clearFileBtn"
+              class="hidden mt-1.5 text-[11px] text-slate-400 hover:text-red-500 transition-colors self-end"
+              onclick="clearFile()">✕ Remove</button>
+          </div>
+          <!-- SYMPTOMS -->
+          <div class="lg:col-span-5 glass-panel rounded-2xl p-4 flex flex-col gap-2.5">
+            <h3 class="text-slate-900 dark:text-white font-semibold text-sm flex items-center gap-2 mb-1"><span
+                class="material-symbols-outlined text-indigo-500 text-lg">edit_note</span>Clinical Context</h3>
+
+            <div
+              class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl border border-slate-200 dark:border-slate-700/50">
+              <span class="material-symbols-outlined text-slate-400 text-[18px] ml-1">escalator_warning</span>
+              <select id="patientAge"
+                class="w-full bg-transparent border-none text-xs font-semibold text-slate-700 dark:text-slate-300 focus:ring-0 outline-none cursor-pointer p-0"
+                onchange="saveState()">
+                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Child (0-14)">Child
+                  (0-14 years)</option>
+                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Young Adult (15-39)">
+                  Young Adult (15-39 years)</option>
+                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Adult (40-64)"
+                  selected>Adult (40-64 years)</option>
+                <option class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white" value="Senior (65+)">Senior
+                  (65+ years)</option>
+              </select>
+            </div>
+
+            <textarea id="symptomsText"
+              class="flex-1 min-h-[70px] bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-xl p-3 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 resize-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all"
+              placeholder="Enter symptoms (cough, fever, weight loss, night sweats...)"></textarea>
+            <div class="flex items-center gap-2">
+              <button id="voiceBtn" onclick="toggleRecording()"
+                class="flex-1 flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 transition-all"><span
+                  class="material-symbols-outlined text-[16px]" id="voiceIcon">mic</span><span
+                  id="voiceLabel">Record</span></button>
+              <label
+                class="flex-1 flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 transition-all cursor-pointer"><span
+                  class="material-symbols-outlined text-[16px]">audio_file</span>Upload Audio<input type="file"
+                  id="audioFileInput" accept="audio/*" class="hidden" onchange="handleAudioUpload(event)" /></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYZE BTN -->
+        <button id="analyzeBtn" onclick="runAnalysis()"
+          class="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary-dark hover:to-blue-700 text-white py-3 rounded-xl font-bold text-sm transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span class="material-symbols-outlined text-lg">rocket_launch</span> Run Comprehensive AI Screening
+        </button>
+
+        <!-- PIPELINE -->
+        <div id="pipelineSection" class="hidden glass-panel rounded-xl p-3 border-l-4 border-l-primary">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Analysis
+              Pipeline</span>
+            <span id="pipelineStatus" class="text-[11px] font-mono text-primary animate-pulse">Initializing...</span>
+          </div>
+          <div class="relative pt-3 pb-1">
+            <div
+              class="h-0.5 w-full bg-slate-200 dark:bg-slate-700/50 rounded-full absolute top-1/2 -translate-y-1/2 left-0 z-0">
+            </div>
+            <div class="flex justify-between relative z-10 w-full">
+              <div class="pipeline-step flex flex-col items-center gap-1.5 opacity-40">
+                <div
+                  class="step-dot size-2.5 rounded-full bg-slate-400 dark:bg-slate-600 ring-3 ring-white dark:ring-background-dark transition-all">
+                </div><span class="pipeline-label text-[9px] font-medium text-slate-500 uppercase">Pre-process</span>
+              </div>
+              <div class="pipeline-step flex flex-col items-center gap-1.5 opacity-40">
+                <div
+                  class="step-dot size-2.5 rounded-full bg-slate-400 dark:bg-slate-600 ring-3 ring-white dark:ring-background-dark transition-all">
+                </div><span class="pipeline-label text-[9px] font-medium text-slate-500 uppercase">Inference</span>
+              </div>
+              <div class="pipeline-step flex flex-col items-center gap-1.5 opacity-40">
+                <div
+                  class="step-dot size-2.5 rounded-full bg-slate-400 dark:bg-slate-600 ring-3 ring-white dark:ring-background-dark transition-all">
+                </div><span class="pipeline-label text-[9px] font-medium text-slate-500 uppercase">Grad-CAM</span>
+              </div>
+              <div class="pipeline-step flex flex-col items-center gap-1.5 opacity-40">
+                <div
+                  class="step-dot size-2.5 rounded-full bg-slate-400 dark:bg-slate-600 ring-3 ring-white dark:ring-background-dark transition-all">
+                </div><span class="pipeline-label text-[9px] font-medium text-slate-500 uppercase">RAG</span>
+              </div>
+              <div class="pipeline-step flex flex-col items-center gap-1.5 opacity-40">
+                <div
+                  class="step-dot size-2.5 rounded-full bg-slate-400 dark:bg-slate-600 ring-3 ring-white dark:ring-background-dark transition-all">
+                </div><span class="pipeline-label text-[9px] font-medium text-slate-500 uppercase">Reasoning</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESULTS (hidden until analysis) -->
+        <div id="resultsSection" class="hidden space-y-4 animate-in">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <!-- METRICS -->
+            <div class="lg:col-span-3 space-y-3">
+              <div id="predictionCard" class="glass-panel p-3 rounded-xl border-l-4 border-l-slate-300">
+                <p class="text-slate-500 text-[10px] uppercase font-semibold">Primary Prediction</p>
+                <h4 id="predictionLabel" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">—</h4>
+                <p id="predictionSub" class="text-xs mt-0.5">Awaiting</p>
+              </div>
+              <div class="glass-panel p-3 rounded-xl border-l-4 border-l-primary bg-primary/5">
+                <p class="text-slate-500 text-[10px] uppercase font-semibold">TB Probability</p>
+                <h4 id="tbProbValue" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">—</h4>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1 mt-1.5 rounded-full overflow-hidden">
+                  <div id="tbProbBar" class="bg-primary h-full rounded-full transition-all duration-700"
+                    style="width:0%"></div>
+                </div>
+              </div>
+              <div class="glass-panel p-3 rounded-xl border-l-4 border-l-indigo-500 bg-indigo-500/5">
+                <p class="text-slate-500 text-[10px] uppercase font-semibold">Confidence</p>
+                <h4 id="confidenceValue" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">—</h4>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1 mt-1.5 rounded-full overflow-hidden">
+                  <div id="confidenceBar" class="bg-indigo-500 h-full rounded-full transition-all duration-700"
+                    style="width:0%"></div>
+                </div>
+              </div>
+              <div id="uncertaintyCard"
+                class="glass-panel p-3 rounded-xl border-l-4 border-l-yellow-500 bg-yellow-500/5">
+                <p class="text-slate-500 text-[10px] uppercase font-semibold">Uncertainty (MC Dropout)</p>
+                <h4 id="uncertaintyValue" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">—</h4>
+                <p id="uncertaintySub" class="text-yellow-600 dark:text-yellow-300 text-xs mt-0.5">—</p>
+              </div>
+            </div>
+
+            <!-- XAI VIEWER -->
+            <div class="lg:col-span-5 glass-panel rounded-2xl p-1 overflow-hidden flex flex-col">
+              <div
+                class="flex items-center justify-between px-3 py-2 border-b border-slate-200 dark:border-slate-700/50">
+                <h3 class="font-semibold text-slate-900 dark:text-white text-xs flex items-center gap-1.5"><span
+                    class="material-symbols-outlined text-purple-500 text-base">visibility</span>Explainable AI View
+                </h3>
+              </div>
+              <div class="flex-1 relative bg-slate-100 dark:bg-slate-900 grid grid-cols-2 gap-px min-h-[260px]">
+                <div class="relative overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-800">
+                  <div
+                    class="absolute top-1.5 left-1.5 z-10 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] text-white">
+                    Input</div>
+                  <img id="resultOriginal" class="w-full h-full object-contain hidden" alt="Original" />
+                  <div id="skelOriginal" class="flex flex-col items-center gap-2 text-slate-400 dark:text-slate-500">
+                    <span class="material-symbols-outlined text-3xl">image</span><span class="text-[10px]">X-ray will
+                      appear here</span>
+                  </div>
+                </div>
+                <div class="relative overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-800">
+                  <div
+                    class="absolute top-1.5 left-1.5 z-10 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] text-white">
+                    Grad-CAM</div>
+                  <img id="resultGradcam" class="w-full h-full object-contain hidden" alt="Grad-CAM" />
+                  <div id="skelGradcam" class="flex flex-col items-center gap-2 text-slate-400 dark:text-slate-500">
+                    <span class="material-symbols-outlined text-3xl">colorize</span><span class="text-[10px]">Heatmap
+                      will appear here</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MISTRAL REASONING -->
+            <div
+              class="lg:col-span-4 glass-panel rounded-2xl p-4 flex flex-col border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.08)]">
+              <div class="flex items-center gap-2 mb-2">
+                <div
+                  class="size-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-white text-base">psychology</span>
+                </div>
+                <div>
+                  <h3 class="text-slate-900 dark:text-white font-bold text-xs">Clinical Reasoning</h3>
+                  <p class="text-indigo-600 dark:text-indigo-300 text-[9px]">Mistral Vision + RAG + Grad-CAM</p>
+                </div>
+              </div>
+              <div id="mistralReasoning"
+                class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[280px] text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed">
+                <!-- Vision separator explicitly rendered here if analyzed -->
+                <p class="text-slate-400 italic text-xs">Run analysis to see clinical reasoning...</p>
+              </div>
+              <!-- FOLLOW-UP -->
+              <div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700/50">
+                <div class="flex gap-1.5">
+                  <input id="followupInput" type="text"
+                    class="flex-1 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:ring-1 focus:ring-primary/50"
+                    placeholder="Ask a follow-up question..." onkeydown="if(event.key==='Enter')askFollowup()" />
+                  <button onclick="askFollowup()"
+                    class="px-2.5 py-1.5 bg-primary text-white rounded-lg text-xs font-medium hover:bg-primary-dark transition-colors"><span
+                      class="material-symbols-outlined text-[14px]">send</span></button>
+                </div>
+              </div>
+              <button onclick="generateReport()"
+                class="w-full mt-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 py-1.5 rounded-lg text-[11px] font-medium transition-colors flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">picture_as_pdf</span>Generate Clinical Report
+              </button>
+            </div>
+          </div>
+
+          <!-- TRACE -->
+          <div class="glass-panel rounded-xl overflow-hidden flex flex-col">
+            <div
+              class="bg-slate-100 dark:bg-slate-900/80 px-3 py-1.5 flex items-center justify-between border-b border-slate-200 dark:border-white/5">
+              <div class="flex items-center gap-1.5"><span
+                  class="material-symbols-outlined text-slate-500 text-xs">terminal</span><span
+                  class="text-[11px] font-mono text-slate-600 dark:text-slate-300">Agent Trace</span></div>
+              <div class="flex gap-1">
+                <div class="size-2 rounded-full bg-red-500/20 border border-red-500/50"></div>
+                <div class="size-2 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
+                <div class="size-2 rounded-full bg-green-500/20 border border-green-500/50"></div>
+              </div>
+            </div>
+            <div id="traceLog"
+              class="bg-slate-50 dark:bg-black/40 p-3 h-24 overflow-y-auto font-mono text-[11px] space-y-0.5"></div>
+          </div>
+        </div>
+
+        <footer class="mt-6 mb-16 text-center">
+          <p class="text-slate-400 dark:text-slate-600 text-[10px]">TB-Guard-XAI v2.0 • Mistral AI Hackathon 2026 • Not
+            for self-diagnosis</p>
+        </footer>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /* ── STATE ──────────────────────────────────── */
+    let selectedFile = null, mediaRecorder = null, audioChunks = [], isRecording = false;
+    let lastAnalysisData = null; // stored for follow-up context
+
+    function saveState() {
+      const state = {
+        symptoms: document.getElementById('symptomsText').value,
+        ageGroup: document.getElementById('patientAge').value,
+        analysisData: lastAnalysisData
+      };
+      const img = document.getElementById('previewImage').src;
+      if (img && img.startsWith('data:')) state.imageSrc = img;
+      try { sessionStorage.setItem('dashboardState', JSON.stringify(state)); } catch (e) { }
+    }
+    document.getElementById('symptomsText').addEventListener('input', saveState);
+
+    /* ── FILE UPLOAD ────────────────────────────── */
+    const fileInput = document.getElementById('fileInput'), dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('border-primary', 'bg-primary/5'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-primary', 'bg-primary/5'));
+    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('border-primary', 'bg-primary/5'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+    fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) { alert('Please upload an image.'); return; }
+      selectedFile = file;
+      document.getElementById('uploadPrompt').classList.add('hidden');
+      document.getElementById('previewContainer').classList.remove('hidden');
+      document.getElementById('clearFileBtn').classList.remove('hidden');
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('previewImage').src = e.target.result;
+        saveState();
+      };
+      reader.readAsDataURL(file);
+      addTraceLog('System', 'Image loaded: ' + file.name);
+    }
+
+    function clearFile() {
+      selectedFile = null; fileInput.value = '';
+      document.getElementById('uploadPrompt').classList.remove('hidden');
+      document.getElementById('previewContainer').classList.add('hidden');
+      document.getElementById('clearFileBtn').classList.add('hidden');
+      document.getElementById('previewImage').src = '';
+      lastAnalysisData = null;
+      document.getElementById('resultsSection').classList.add('hidden');
+      sessionStorage.removeItem('dashboardState');
+    }
+
+    /* ── VOICE ──────────────────────────────────── */
+    async function toggleRecording() {
+      const btn = document.getElementById('voiceBtn'), icon = document.getElementById('voiceIcon'), lab = document.getElementById('voiceLabel');
+      if (isRecording) { mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording-pulse', 'bg-red-500/10', 'border-red-500/30'); icon.textContent = 'mic'; lab.textContent = 'Record'; }
+      else {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); mediaRecorder = new MediaRecorder(stream); audioChunks = [];
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = async () => { const blob = new Blob(audioChunks, { type: 'audio/wav' }); stream.getTracks().forEach(t => t.stop()); lab.textContent = 'Transcribing...'; await transcribeAudio(blob); lab.textContent = 'Record'; };
+          mediaRecorder.start(); isRecording = true; btn.classList.add('recording-pulse', 'bg-red-500/10', 'border-red-500/30'); icon.textContent = 'stop'; lab.textContent = 'Stop'; addTraceLog('Voxtral', 'Recording...');
+        } catch (e) { alert('Mic unavailable.'); }
+      }
+    }
+    async function handleAudioUpload(ev) { const f = ev.target.files[0]; if (!f) return; addTraceLog('Voxtral', 'Audio: ' + f.name); await transcribeAudio(f); }
+    async function transcribeAudio(blob) {
+      const fd = new FormData(); fd.append('file', blob, blob.name || 'rec.wav');
+      try {
+        const r = await fetch('/transcribe', { method: 'POST', body: fd }); const d = await r.json();
+
+        if (d.error && d.is_valid === false && d.transcript) {
+          alert('⚠️ ' + d.error + '\n\n' + 'Heard: "' + d.transcript + '"');
+          addTraceLog('Error', 'Symptoms rejected (Not respiratory-related).');
+          return;
+        }
+
+        if (d.transcript && d.is_valid) {
+          document.getElementById('symptomsText').value = d.transcript;
+          addTraceLog('Voxtral', 'Transcribed: "' + d.transcript.substring(0, 60) + '..."');
+          saveState();
+        }
+        else addTraceLog('Error', d.error || 'Empty transcription.');
+      } catch (e) { addTraceLog('Error', 'Transcription failed.'); }
+    }
+
+    /* ── ANALYSIS ───────────────────────────────── */
+    async function runAnalysis() {
+      if (!selectedFile) { alert('Upload a chest X-ray first.'); return; }
+      const btn = document.getElementById('analyzeBtn');
+      btn.disabled = true; btn.innerHTML = '<span class="animate-spin material-symbols-outlined text-lg">progress_activity</span> Analyzing...';
+      document.getElementById('pipelineSection').classList.remove('hidden');
+      document.getElementById('resultsSection').classList.remove('hidden');
+      resetPipeline(); resetResults();
+
+      const steps = document.querySelectorAll('.pipeline-step');
+      let pipelineDone = false;
+
+      // Live animation effect for pipeline
+      const animatePipeline = async () => {
+        const msgs = ['Pre-processing image...', 'Running neural network inference...', 'Generating Grad-CAM heatmap...', 'Synthesizing clinical knowledge...', 'Reasoning with Mistral LLM...'];
+        for (let i = 0; i < 5; i++) {
+          if (pipelineDone) break;
+          steps[i].classList.remove('opacity-40');
+          const d = steps[i].querySelector('.step-dot');
+          d.className = 'step-dot size-2.5 rounded-full bg-primary ring-4 ring-primary/20 shadow-[0_0_12px_rgba(13,128,242,0.7)] transition-all';
+          document.getElementById('pipelineStatus').textContent = msgs[i];
+          addTraceLog('System', msgs[i]);
+          await new Promise(r => setTimeout(r, 1200));
+        }
+      };
+
+      const pipAnim = animatePipeline();
+
+      try {
+        const formData = new FormData(); formData.append('file', selectedFile);
+        formData.append('symptoms', document.getElementById('symptomsText').value);
+        formData.append('age_group', document.getElementById('patientAge').value);
+
+        const res = await fetch('/analyze', { method: 'POST', body: formData });
+        const data = await res.json();
+        pipelineDone = true; // Stop animation loop
+
+        if (data.error) throw new Error(data.error);
+        else {
+          // Finish pipeline successfully
+          steps.forEach(s => {
+            s.classList.remove('opacity-40');
+            const dd = s.querySelector('.step-dot');
+            dd.className = 'step-dot size-2.5 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] transition-all';
+          });
+          const ps = document.getElementById('pipelineStatus');
+          ps.textContent = 'Complete ✓';
+          ps.className = 'text-[11px] font-mono text-emerald-500 font-bold';
+          lastAnalysisData = data;
+          displayResults(data);
+          saveState();
+          addTraceLog('System', '✅ Analysis complete.');
+
+          // Auto hide pipeline after 3s
+          setTimeout(() => {
+            document.getElementById('pipelineSection').classList.add('hidden');
+          }, 4000);
+        }
+      } catch (e) {
+        pipelineDone = true;
+        addTraceLog('Error', e.message);
+        alert('Error: ' + e.message);
+      }
+      btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined text-lg">rocket_launch</span> Run Comprehensive AI Screening';
+    }
+
+    function resetPipeline() {
+      document.querySelectorAll('.pipeline-step').forEach(s => { s.classList.add('opacity-40'); const d = s.querySelector('.step-dot'); d.className = 'step-dot size-2.5 rounded-full bg-slate-400 dark:bg-slate-600 ring-3 ring-white dark:ring-background-dark transition-all'; s.querySelector('.pipeline-label').className = 'pipeline-label text-[9px] font-medium text-slate-500 uppercase'; });
+      const ps = document.getElementById('pipelineStatus'); ps.textContent = 'Initializing...'; ps.className = 'text-[11px] font-mono text-primary animate-pulse';
+    }
+    function resetResults() {
+      document.getElementById('skelOriginal').classList.remove('hidden'); document.getElementById('skelGradcam').classList.remove('hidden');
+      document.getElementById('resultOriginal').classList.add('hidden'); document.getElementById('resultGradcam').classList.add('hidden');
+      document.getElementById('mistralReasoning').innerHTML = '<div class="flex items-center gap-2 text-slate-400"><span class="animate-spin material-symbols-outlined text-sm">progress_activity</span><span class="text-xs">Analyzing...</span></div>';
+    }
+
+    function displayResults(data) {
+      const prob = data.probability || 0, confidence = prob > 0.5 ? prob : (1 - prob), uncertainty = data.uncertainty || 'Unknown', uncertaintyStd = data.uncertainty_std || 0, prediction = data.prediction || 'Unknown';
+      const isTB = prediction.toLowerCase().includes('tuberculosis') || prediction.toLowerCase().includes('tb') || prediction === 'Possible Tuberculosis';
+
+      const pc = document.getElementById('predictionCard'), pl = document.getElementById('predictionLabel'), ps = document.getElementById('predictionSub');
+      pc.className = 'glass-panel p-3 rounded-xl border-l-4 ' + (isTB ? 'border-l-red-500 bg-red-500/5' : 'border-l-emerald-500 bg-emerald-500/5');
+      pl.textContent = isTB ? 'Positive' : 'Negative'; ps.textContent = isTB ? 'Tuberculosis Detected' : 'Likely Normal';
+      ps.className = 'text-xs mt-0.5 ' + (isTB ? 'text-red-500' : 'text-emerald-500');
+
+      document.getElementById('tbProbValue').textContent = (prob * 100).toFixed(1) + '%'; document.getElementById('tbProbBar').style.width = (prob * 100) + '%';
+      document.getElementById('confidenceValue').textContent = (confidence * 100).toFixed(1) + '%'; document.getElementById('confidenceBar').style.width = (confidence * 100) + '%';
+      document.getElementById('uncertaintyValue').textContent = uncertainty;
+      const us = document.getElementById('uncertaintySub'), uc = document.getElementById('uncertaintyCard');
+      if (uncertainty === 'Low') { us.textContent = 'High Reliability'; uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-emerald-500 bg-emerald-500/5'; }
+      else if (uncertainty === 'Medium') { us.textContent = 'Moderate — Acceptable Variance'; uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-yellow-500 bg-yellow-500/5'; }
+      else { us.textContent = 'Unreliable — Review Required'; uc.className = 'glass-panel p-3 rounded-xl border-l-4 border-l-red-500 bg-red-500/5'; }
+
+      // Images
+      const orig = document.getElementById('resultOriginal'), gc = document.getElementById('resultGradcam');
+      if (document.getElementById('previewImage').src) { orig.src = document.getElementById('previewImage').src; orig.classList.remove('hidden'); document.getElementById('skelOriginal').classList.add('hidden'); }
+      if (data.gradcam_image) { gc.src = 'data:image/png;base64,' + data.gradcam_image; gc.classList.remove('hidden'); document.getElementById('skelGradcam').classList.add('hidden'); }
+      else { document.getElementById('skelGradcam').innerHTML = '<span class="text-slate-400 text-xs">Grad-CAM unavailable</span>'; }
+
+      // Reasoning
+      if (data.clinical_explanation) document.getElementById('mistralReasoning').innerHTML = formatExplanation(data.clinical_explanation);
+    }
+
+    /* ── MARKDOWN → CLEAN HTML ──────────────────── */
+    function formatExplanation(text) {
+      let html = '', inUl = false, inOl = false, inTable = false;
+      for (const raw of text.split('\n')) {
+        const line = raw.trim(); if (!line) { if (inUl) { html += '</ul>'; inUl = false; } if (inOl) { html += '</ol>'; inOl = false; } if (inTable) { html += '</tbody></table></div>'; inTable = false; } continue; }
+
+        // table
+        if (line.startsWith('|') && line.endsWith('|')) {
+          if (inUl) { html += '</ul>'; inUl = false; } if (inOl) { html += '</ol>'; inOl = false; }
+          if (line.includes('---')) continue;
+          if (!inTable) { html += '<div class="overflow-x-auto my-3 border border-slate-200 dark:border-slate-700/50 rounded"><table class="w-full text-left text-[12px]">'; inTable = true; }
+          const cells = line.split('|').slice(1, -1);
+          if (html.includes('<tbody>')) {
+            html += '<tr class="border-t border-slate-100 dark:border-slate-800/50">'; cells.forEach(c => html += `<td class="p-2 text-slate-700 dark:text-slate-300">${cleanMd(c.trim())}</td>`); html += '</tr>';
+          } else {
+            html += '<thead class="bg-slate-50 dark:bg-slate-800/50"><tr>'; cells.forEach(c => html += `<th class="p-2 font-semibold text-slate-800 dark:text-slate-200">${cleanMd(c.trim())}</th>`); html += '</tr></thead><tbody>';
+          }
+          continue;
+        }
+
+        // headers
+        if (inTable) { html += '</tbody></table></div>'; inTable = false; }
+        if (line.startsWith('#### ')) { if (inUl) { html += '</ul>'; inUl = false; } html += `<h4 class="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-3 mb-1 uppercase tracking-wide">${cleanMd(line.slice(5))}</h4>`; continue; }
+        if (line.startsWith('### ')) { if (inUl) { html += '</ul>'; inUl = false; } html += `<h3 class="text-sm font-bold text-slate-900 dark:text-white mt-4 mb-1.5 border-b border-slate-200 dark:border-slate-700/30 pb-1">${cleanMd(line.slice(4))}</h3>`; continue; }
+        if (line.startsWith('## ')) { if (inUl) { html += '</ul>'; inUl = false; } html += `<h3 class="text-sm font-bold text-slate-900 dark:text-white mt-3 mb-1">${cleanMd(line.slice(3))}</h3>`; continue; }
+        // bullets
+        if (line.startsWith('- ') || line.startsWith('* ')) { if (!inUl) { html += '<ul class="space-y-1 ml-0.5">'; inUl = true; } html += `<li class="flex gap-1.5 text-[13px] leading-relaxed"><span class="text-primary mt-0.5 shrink-0">•</span><span>${cleanMd(line.slice(2))}</span></li>`; continue; }
+        // numbered
+        const nm = line.match(/^(\d+)\.\s+(.*)$/);
+        if (nm) { if (!inOl) { html += '<ol class="space-y-1 ml-0.5 list-decimal list-inside">'; inOl = true; } html += `<li class="text-[13px] leading-relaxed">${cleanMd(nm[2])}</li>`; continue; }
+        // paragraph
+        if (inUl) { html += '</ul>'; inUl = false; } if (inOl) { html += '</ol>'; inOl = false; }
+        html += `<p class="text-[13px] leading-relaxed mb-1">${cleanMd(line)}</p>`;
+      }
+      if (inUl) html += '</ul>'; if (inOl) html += '</ol>'; if (inTable) html += '</tbody></table></div>'; return html;
+    }
+    function cleanMd(t) { return t.replace(/\*\*(.+?)\*\*/g, '<strong class="text-slate-900 dark:text-white font-semibold">$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/`(.+?)`/g, '<code class="bg-slate-100 dark:bg-slate-800 px-1 rounded text-[11px]">$1</code>'); }
+
+    /* ── FOLLOW-UP QUESTIONS ────────────────────── */
+    async function askFollowup() {
+      const input = document.getElementById('followupInput'); const q = input.value.trim(); if (!q) return; input.value = '';
+      const panel = document.getElementById('mistralReasoning');
+      panel.innerHTML += `<div class="mt-3 pt-2 border-t border-indigo-200 dark:border-indigo-500/20"><p class="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1">Follow-up: ${q}</p><div class="flex items-center gap-1.5 text-slate-400"><span class="animate-spin material-symbols-outlined text-[12px]">progress_activity</span><span class="text-[11px]">Thinking...</span></div></div>`;
+      panel.scrollTop = panel.scrollHeight;
+      const context = lastAnalysisData ? `Previous TB screening result: Prediction=${lastAnalysisData.prediction}, Probability=${lastAnalysisData.probability}, Uncertainty=${lastAnalysisData.uncertainty}. Region=${lastAnalysisData.region || 'lung field'}. ` : '';
+      try {
+        const r = await fetch('/general_consult', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: context + 'Question: ' + q }) });
+        const d = await r.json();
+        const lastDiv = panel.querySelector('.mt-3:last-child');
+        if (lastDiv) {
+          const thinkEl = lastDiv.querySelector('.flex.items-center'); if (thinkEl) thinkEl.remove();
+          lastDiv.innerHTML += formatExplanation(d.response || d.error || 'No response');
+          if (d.safety_validated !== false) lastDiv.innerHTML += '<div class="flex items-center gap-1 mt-1"><span class="text-[10px]">🛡️</span><span class="text-[10px] text-primary font-medium">MedGemma Validated</span></div>';
+        }
+      } catch (e) { panel.innerHTML += '<p class="text-xs text-red-500">Error: ' + e.message + '</p>'; }
+      panel.scrollTop = panel.scrollHeight;
+    }
+
+    /* ── REPORT ─────────────────────────────────── */
+    function generateReport() {
+      const pred = document.getElementById('predictionLabel').textContent;
+      if (pred === '—') { alert('Run analysis first.'); return; }
+      const prob = document.getElementById('tbProbValue').textContent, conf = document.getElementById('confidenceValue').textContent, unc = document.getElementById('uncertaintyValue').textContent;
+      const reasoningEl = document.getElementById('mistralReasoning');
+      const reasoningHtml = reasoningEl.innerHTML; // get rendered HTML directly
+      const symptoms = document.getElementById('symptomsText').value;
+      const now = new Date().toLocaleString();
+      const isTB = pred === 'Positive';
+
+      // Get images as data URLs
+      const origImg = document.getElementById('resultOriginal');
+      const gcImg = document.getElementById('resultGradcam');
+      let origSrc = '', gcSrc = '';
+      try { if (origImg && !origImg.classList.contains('hidden')) origSrc = origImg.src; } catch (e) { }
+      try { if (gcImg && !gcImg.classList.contains('hidden')) gcSrc = gcImg.src; } catch (e) { }
+
+      const html = `<!DOCTYPE html><html><head><title>TB-Guard-XAI Clinical Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;color:#1e293b;padding:40px 50px;max-width:900px;margin:0 auto;position:relative;line-height:1.7}
+.watermark{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:80px;font-weight:900;color:rgba(13,128,242,0.04);white-space:nowrap;pointer-events:none;z-index:0;letter-spacing:6px}
+.content{position:relative;z-index:1}
+.header{text-align:center;border-bottom:3px solid #0d80f2;padding-bottom:20px;margin-bottom:28px}
+.header h1{color:#0d80f2;font-size:22px;font-weight:700;letter-spacing:-0.02em}
+.header p{color:#64748b;font-size:11px;margin-top:6px}
+.section{border:1.5px solid #e2e8f0;border-radius:10px;padding:20px 24px;margin-bottom:16px;page-break-inside:avoid}
+.section h2{font-size:11px;font-weight:700;text-transform:uppercase;color:#0d80f2;margin-bottom:10px;letter-spacing:0.06em;border-bottom:1px solid #f1f5f9;padding-bottom:6px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.metric{border:1.5px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}
+.metric-label{font-size:9px;text-transform:uppercase;color:#64748b;font-weight:600;letter-spacing:0.05em}
+.metric-value{font-size:20px;font-weight:700;margin-top:4px}
+.images-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.img-card{border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;text-align:center;background:#f8fafc}
+.img-card img{width:100%;height:200px;object-fit:contain;background:#000}
+.img-card .img-label{padding:6px 0;font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em}
+.reasoning{font-size:12px;line-height:1.7}
+.reasoning h3{font-size:13px;font-weight:700;color:#1e293b;margin:12px 0 4px;border-bottom:1px solid #f1f5f9;padding-bottom:3px}
+.reasoning h4{font-size:11px;font-weight:700;color:#0d80f2;margin:8px 0 2px;text-transform:uppercase;letter-spacing:0.03em}
+.reasoning p{margin-bottom:4px}
+.reasoning ul,.reasoning ol{margin:2px 0 6px 14px}
+.reasoning li{margin-bottom:2px}
+.reasoning strong{color:#1e293b;font-weight:600}
+.reasoning table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
+.reasoning th,.reasoning td{padding:6px;border:1px solid #e2e8f0;text-align:left}
+.reasoning th{background:#f8fafc}
+.disclaimer{background:#fef3c7;border:1.5px solid #fbbf24;border-radius:8px;padding:10px 14px;margin-top:14px;font-size:10px;color:#92400e}
+.footer{text-align:center;border-top:2px solid #e2e8f0;padding-top:14px;margin-top:20px;padding-bottom:10px}
+.footer p{color:#94a3b8;font-size:9px;line-height:1.5}
+@media print{ @page { size: auto; margin: 0; } body{padding:15mm} .content{page-break-after:avoid} html,body{height:auto;min-height:100vh} }
+</style></head><body>
+<div class="watermark">TB-GUARD-XAI</div>
+<div class="content">
+<div class="header"><h1>TB-Guard-XAI Clinical Screening Report</h1><p>Generated: ${now} &bull; AI-Assisted Screening &mdash; Not for Self-Diagnosis</p></div>
+<div class="metrics">
+<div class="metric"><div class="metric-label">Prediction</div><div class="metric-value" style="color:${isTB ? '#ef4444' : '#10b981'}">${pred}</div></div>
+<div class="metric"><div class="metric-label">TB Probability</div><div class="metric-value" style="color:#0d80f2">${prob}</div></div>
+<div class="metric"><div class="metric-label">Confidence</div><div class="metric-value">${conf}</div></div>
+<div class="metric"><div class="metric-label">Uncertainty</div><div class="metric-value">${unc}</div></div>
+</div>
+${(origSrc || gcSrc) ? `<div class="images-grid">${origSrc ? `<div class="img-card"><img src="${origSrc}" alt="Input X-ray"/><div class="img-label">Input Chest X-Ray</div></div>` : ''}
+${gcSrc ? `<div class="img-card"><img src="${gcSrc}" alt="Grad-CAM"/><div class="img-label">Grad-CAM Attention Map</div></div>` : ''}</div>` : ''}
+${symptoms ? `<div class="section"><h2>Reported Symptoms</h2><p style="font-size:11px">${symptoms}</p></div>` : ''}
+<div class="section"><h2>AI Clinical Reasoning &mdash; Mistral Large 3 + MedGemma</h2><div class="reasoning">${reasoningHtml}</div></div>
+<div class="disclaimer">&#x26A0;&#xFE0F; <strong>Disclaimer:</strong> This report is AI-generated for screening support only. All findings require confirmation through microbiological testing and clinical assessment by a qualified professional.</div>
+<div class="footer"><p>TB-Guard-XAI v2.0 | Mistral AI Hackathon 2026 | Powered by Mistral Large 3 + MedGemma</p><p>&copy; 2026 TB-Guard-XAI. Medical Grade Prototype.</p></div>
+</div></body></html>`;
+
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0'; iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
+      document.body.appendChild(iframe);
+      const doc = iframe.contentWindow.document;
+      doc.open(); doc.write(html); doc.close();
+      setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        setTimeout(() => document.body.removeChild(iframe), 1000);
+      }, 800);
+    }
+
+    /* ── TRACE LOG ──────────────────────────────── */
+    function addTraceLog(agent, msg) {
+      const log = document.getElementById('traceLog'); const t = new Date().toLocaleTimeString('en-US', { hour12: false });
+      const c = { System: 'text-emerald-600 dark:text-emerald-400', Agent: 'text-primary', RAG: 'text-purple-600 dark:text-purple-400', Voxtral: 'text-indigo-500', Error: 'text-red-500' };
+      const div = document.createElement('div'); div.className = 'flex gap-1.5';
+      div.innerHTML = `<span class="text-slate-400 dark:text-slate-500 shrink-0">[${t}]</span><span class="${c[agent] || 'text-primary'} shrink-0">${agent}</span><span class="text-slate-700 dark:text-slate-300">${msg}</span>`;
+      log.appendChild(div); log.scrollTop = log.scrollHeight;
+    }
+
+    /* ── THEME ──────────────────────────────────── */
+    function toggleTheme() { const h = document.documentElement, l = document.getElementById('themeLabel'); if (h.classList.contains('dark')) { h.classList.remove('dark'); l.textContent = 'Light'; localStorage.setItem('theme', 'light'); } else { h.classList.add('dark'); l.textContent = 'Dark'; localStorage.setItem('theme', 'dark'); } }
+
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    /* ── INIT ───────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (localStorage.getItem('theme') === 'light') { document.documentElement.classList.remove('dark'); document.getElementById('themeLabel').textContent = 'Light'; }
+      addTraceLog('System', 'TB-Guard-XAI v2.0 ready.');
+
+      // Load demo case from gallery
+      const dc = sessionStorage.getItem('demoCase');
+      if (dc) {
+        const c = JSON.parse(dc); sessionStorage.removeItem('demoCase');
+        document.getElementById('symptomsText').value = c.symptoms || '';
+        addTraceLog('System', 'Demo loaded: ' + c.name);
+        // Load demo image
+        if (c.imageUrl) {
+          addTraceLog('System', 'Fetching demo X-ray...');
+          try {
+            const resp = await fetch(c.imageUrl); const blob = await resp.blob();
+            const file = new File([blob], 'demo_xray.png', { type: blob.type || 'image/png' });
+            handleFile(file);
+            addTraceLog('System', 'Demo image loaded successfully.');
+            setTimeout(saveState, 500); // ensure saveState picks up new image and symptoms
+          } catch (e) { addTraceLog('Error', 'Could not load demo image: ' + e.message); }
+        } else {
+          saveState();
+        }
+      } else {
+        // Restore from dashboard state
+        const saved = sessionStorage.getItem('dashboardState');
+        if (saved) {
+          try {
+            const state = JSON.parse(saved);
+            if (state.symptoms) document.getElementById('symptomsText').value = state.symptoms;
+            if (state.ageGroup) document.getElementById('patientAge').value = state.ageGroup;
+            if (state.imageSrc) {
+              const res = await fetch(state.imageSrc); const blob = await res.blob();
+              selectedFile = new File([blob], 'restored_xray.png', { type: blob.type || 'image/png' });
+              document.getElementById('previewImage').src = state.imageSrc;
+              document.getElementById('uploadPrompt').classList.add('hidden');
+              document.getElementById('previewContainer').classList.remove('hidden');
+              document.getElementById('clearFileBtn').classList.remove('hidden');
+              addTraceLog('System', 'Previous image restored.');
+            }
+            if (state.analysisData) {
+              lastAnalysisData = state.analysisData;
+              document.getElementById('resultsSection').classList.remove('hidden');
+              displayResults(lastAnalysisData);
+              addTraceLog('System', 'Previous analysis restored.');
+            }
+          } catch (e) { console.error('Error restoring state', e); }
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>TB-Guard-XAI — Clinical Demo Gallery</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#0d7ff2", "background-light": "#f5f7f8", "background-dark": "#101922", "surface-dark": "#1a2632", "border-dark": "#2a3b4d" }, fontFamily: { "display": ["Inter", "sans-serif"] }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" } } } }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+
+        <!-- HEADER -->
+        <header
+            class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-border-dark bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-6 py-3 lg:px-10 transition-colors duration-300">
+            <div class="flex items-center gap-3">
+                <div class="size-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><span
+                        class="material-symbols-outlined text-xl">radiology</span></div>
+                <h2 class="text-slate-900 dark:text-white text-lg font-bold">TB-Guard-XAI</h2>
+            </div>
+            <div class="hidden md:flex flex-1 justify-end gap-6 items-center">
+                <div class="flex items-center gap-6 mr-4">
+                    <a class="text-slate-600 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium"
+                        href="/">Triage Dashboard</a>
+                    <a class="text-slate-600 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium"
+                        href="/consult">AI Consult</a>
+                    <a class="text-primary text-sm font-bold" href="/gallery">Demo Gallery</a>
+                </div>
+                <button onclick="toggleTheme()"
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+                    <span class="material-symbols-outlined text-lg text-slate-500 dark:text-slate-400"
+                        id="theme-toggle-icon">dark_mode</span>
+                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Theme</span>
+                </button>
+                <a href="/"
+                    class="flex items-center justify-center rounded-lg h-9 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold">Live
+                    Dashboard →</a>
+            </div>
+        </header>
+
+        <!-- MAIN -->
+        <main class="flex-1 flex flex-col items-center py-8 px-4 md:px-10">
+            <div class="w-full max-w-7xl flex flex-col gap-8">
+
+                <!-- TITLE -->
+                <div class="flex flex-col gap-2 max-w-2xl border-b border-slate-200 dark:border-border-dark pb-6">
+                    <div class="flex items-center gap-2 text-primary text-sm font-bold tracking-wider uppercase">
+                        <span class="material-symbols-outlined text-lg">science</span> Hackathon Demo Gallery
+                    </div>
+                    <h1
+                        class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">
+                        Pre-loaded Clinical Scenarios</h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-base leading-relaxed">Click <strong>"Load into
+                            Triage"</strong> to instantly populate the dashboard with real X-ray images and symptoms for
+                        one-click analysis.</p>
+                </div>
+
+                <!-- CASES GRID -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <!-- CASE 1: HIGH RISK -->
+                    <div
+                        class="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5">
+                        <div class="relative h-56 overflow-hidden bg-slate-900 flex items-center justify-center">
+                            <img alt="TB Positive X-ray"
+                                class="h-full w-full object-contain transition-transform duration-700 group-hover:scale-105"
+                                src="/static/demo/high_risk.png" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent">
+                            </div>
+                            <div class="absolute top-3 left-3 flex gap-2">
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-bold uppercase tracking-wider backdrop-blur-md">High
+                                    Risk</span>
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-slate-800/60 text-slate-300 border border-slate-700 text-xs font-medium backdrop-blur-md">TB
+                                    Prob: 87.5%</span>
+                            </div>
+                            <div
+                                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-[2px]">
+                                <button
+                                    onclick="loadCase('Classic Upper Lobe TB', 'Persistent cough for 3 weeks, night sweats, fever, unintentional weight loss of 5kg. Contact with known TB patient.', '/static/demo/high_risk.png')"
+                                    class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 text-sm">
+                                    <span class="material-symbols-outlined text-lg">play_arrow</span> Load into Triage
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 p-5">
+                            <h3
+                                class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                                Classic Upper Lobe TB</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Male, 45y • Persistent cough, night
+                                sweats, fever</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Cavitation in the
+                                right upper lobe with surrounding consolidation. Model confidence: 87.5% TB probability.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-1"><span
+                                    class="px-2 py-0.5 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 border border-transparent dark:border-slate-700">Cavitation</span><span
+                                    class="px-2 py-0.5 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 border border-transparent dark:border-slate-700">Infiltration</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CASE 2: MODERATE -->
+                    <div
+                        class="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5">
+                        <div class="relative h-56 overflow-hidden bg-slate-900 flex items-center justify-center">
+                            <img alt="Moderate risk X-ray"
+                                class="h-full w-full object-contain transition-transform duration-700 group-hover:scale-105"
+                                src="/static/demo/moderate.png" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent">
+                            </div>
+                            <div class="absolute top-3 left-3 flex gap-2">
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-yellow-500/20 text-yellow-400 border border-yellow-500/20 text-xs font-bold uppercase tracking-wider backdrop-blur-md">Moderate
+                                    Risk</span>
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-slate-800/60 text-slate-300 border border-slate-700 text-xs font-medium backdrop-blur-md">TB
+                                    Prob: 61.3%</span>
+                            </div>
+                            <div
+                                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-[2px]">
+                                <button
+                                    onclick="loadCase('Subtle Lesion Detection', 'Occasional dry cough for 1 week, mild fatigue. No fever. Routine screening during health checkup.', '/static/demo/moderate.png')"
+                                    class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 text-sm">
+                                    <span class="material-symbols-outlined text-lg">play_arrow</span> Load into Triage
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 p-5">
+                            <h3
+                                class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                                Subtle Lesion Detection</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Female, 28y • Mild cough, routine
+                                screening</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Faint nodular opacity
+                                in the mid-zone. Tests AI sensitivity to early-stage disease. Model: 61.3% TB
+                                probability.</p>
+                            <div class="flex flex-wrap gap-2 mt-1"><span
+                                    class="px-2 py-0.5 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 border border-transparent dark:border-slate-700">Early
+                                    Stage</span><span
+                                    class="px-2 py-0.5 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 border border-transparent dark:border-slate-700">Nodule</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CASE 3: HEALTHY -->
+                    <div
+                        class="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5">
+                        <div class="relative h-56 overflow-hidden bg-slate-900 flex items-center justify-center">
+                            <img alt="Normal chest X-ray"
+                                class="h-full w-full object-contain transition-transform duration-700 group-hover:scale-105"
+                                src="/static/demo/healthy.png" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent">
+                            </div>
+                            <div class="absolute top-3 left-3 flex gap-2">
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-green-500/20 text-green-400 border border-green-500/20 text-xs font-bold uppercase tracking-wider backdrop-blur-md">Healthy</span>
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-slate-800/60 text-slate-300 border border-slate-700 text-xs font-medium backdrop-blur-md">TB
+                                    Prob: 8.6%</span>
+                            </div>
+                            <div
+                                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-[2px]">
+                                <button
+                                    onclick="loadCase('Healthy Control', 'No symptoms. Routine annual health checkup. No history of respiratory illness.', '/static/demo/healthy.png')"
+                                    class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 text-sm">
+                                    <span class="material-symbols-outlined text-lg">play_arrow</span> Load into Triage
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 p-5">
+                            <h3
+                                class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                                Healthy Control</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Male, 32y • Routine checkup,
+                                asymptomatic</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Clear lung fields,
+                                normal cardiac silhouette. Verifies model specificity. TB probability: only 8.6%.</p>
+                            <div class="flex flex-wrap gap-2 mt-1"><span
+                                    class="px-2 py-0.5 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 border border-transparent dark:border-slate-700">Baseline</span><span
+                                    class="px-2 py-0.5 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 border border-transparent dark:border-slate-700">Control</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CASE 4: COMPLEX -->
+                    <div
+                        class="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5">
+                        <div class="relative h-56 overflow-hidden bg-slate-900 flex items-center justify-center">
+                            <img alt="Complex case X-ray"
+                                class="h-full w-full object-contain transition-transform duration-700 group-hover:scale-105"
+                                src="/static/demo/complex.png" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent">
+                            </div>
+                            <div class="absolute top-3 left-3 flex gap-2">
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-orange-500/20 text-orange-400 border border-orange-500/20 text-xs font-bold uppercase tracking-wider backdrop-blur-md">Complex</span>
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-slate-800/60 text-slate-300 border border-slate-700 text-xs font-medium backdrop-blur-md">High
+                                    Uncertainty</span>
+                            </div>
+                            <div
+                                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-[2px]">
+                                <button
+                                    onclick="loadCase('High Uncertainty Case', 'Progressive shortness of breath over 2 weeks, dull chest pain on right side, reduced appetite. History of diabetes.', '/static/demo/complex.png')"
+                                    class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 text-sm">
+                                    <span class="material-symbols-outlined text-lg">play_arrow</span> Load into Triage
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 p-5">
+                            <h3
+                                class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                                High Uncertainty Case</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Male, 58y • Dyspnea, chest pain,
+                                diabetes</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">TB prob 84.8% but high
+                                uncertainty (std=0.16). Tests model's uncertainty quantification and edge-case handling.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-1"><span
+                                    class="px-2 py-0.5 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 border border-transparent dark:border-slate-700">Comorbidity</span><span
+                                    class="px-2 py-0.5 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 border border-transparent dark:border-slate-700">Edge
+                                    Case</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA -->
+                <div
+                    class="p-6 md:p-8 rounded-2xl bg-gradient-to-r from-slate-100 to-white dark:from-surface-dark dark:to-background-dark border border-slate-200 dark:border-border-dark flex flex-col md:flex-row items-center justify-between gap-5 relative overflow-hidden">
+                    <div
+                        class="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none">
+                    </div>
+                    <div class="relative z-10 flex flex-col gap-1.5 text-center md:text-left">
+                        <h4 class="text-lg font-bold text-slate-900 dark:text-white">Have your own X-ray?</h4>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm max-w-lg">Upload any chest radiograph
+                            directly for instant AI analysis with Grad-CAM, RAG, and Mistral reasoning.</p>
+                    </div>
+                    <a href="/"
+                        class="relative z-10 flex items-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-5 py-2.5 rounded-lg font-bold border border-slate-200 dark:border-slate-700 transition-colors shadow-sm text-sm">
+                        <span class="material-symbols-outlined text-lg">upload_file</span> Go to Dashboard
+                    </a>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="mt-auto border-t border-slate-200 dark:border-border-dark py-6">
+            <div class="px-10 flex flex-col gap-3 text-center">
+                <div class="flex flex-wrap items-center justify-center gap-6">
+                    <a class="text-slate-500 dark:text-slate-400 hover:text-primary text-sm font-medium transition-colors"
+                        href="/">Dashboard</a>
+                    <a class="text-slate-500 dark:text-slate-400 hover:text-primary text-sm font-medium transition-colors"
+                        href="/consult">AI Consult</a>
+                    <a class="text-slate-500 dark:text-slate-400 hover:text-primary text-sm font-medium transition-colors"
+                        href="/gallery">Demo Gallery</a>
+                </div>
+                <p class="text-slate-400 dark:text-slate-600 text-xs">© 2026 TB-Guard-XAI. Mistral AI Hackathon. Demo —
+                    not for clinical diagnosis.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function loadCase(name, symptoms, imageUrl) {
+            sessionStorage.setItem('demoCase', JSON.stringify({ name, symptoms, imageUrl }));
+            window.location.href = '/';
+        }
+        function toggleTheme() {
+            const h = document.documentElement, i = document.getElementById('theme-toggle-icon');
+            if (h.classList.contains('dark')) { h.classList.remove('dark'); i.textContent = 'light_mode'; localStorage.setItem('theme', 'light'); }
+            else { h.classList.add('dark'); i.textContent = 'dark_mode'; localStorage.setItem('theme', 'dark'); }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'light') { document.documentElement.classList.remove('dark'); document.getElementById('theme-toggle-icon').textContent = 'light_mode'; }
+        });
+    </script>
+</body>
+
+</html>

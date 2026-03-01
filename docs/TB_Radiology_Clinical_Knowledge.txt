@@ -1,0 +1,312 @@
+TUBERCULOSIS CHEST RADIOGRAPHY: COMPREHENSIVE CLINICAL KNOWLEDGE BASE
+======================================================================
+Source: Curated from WHO Guidelines, ATS/IDSA/CDC Clinical Practice Guidelines,
+Radiology Assistant, and peer-reviewed literature
+For use in TB-Guard-XAI RAG grounding system
+
+=====================================================================
+SECTION 1: RADIOGRAPHIC MANIFESTATIONS OF TUBERCULOSIS
+=====================================================================
+
+1.1 PRIMARY TUBERCULOSIS
+
+Primary tuberculosis occurs upon initial infection with Mycobacterium tuberculosis.
+Radiographic findings may include:
+
+- Lymphadenopathy: Most common radiological manifestation of primary TB, especially
+  in children (up to 96%). Typically involves right paratracheal, hilar, or subcarinal
+  lymph nodes. Can also be seen in adults (43% of cases).
+
+- Parenchymal consolidation: Dense, homogeneous, well-defined consolidation commonly
+  affecting the middle and lower lung zones. Any lobe can be affected.
+
+- Ghon focus: A small calcified granulomatous lesion, typically in the periphery of
+  the lung (superior part of lower lobe or inferior part of upper lobe).
+
+- Ghon complex: Ghon focus combined with ipsilateral hilar lymph node enlargement.
+
+- Ranke complex: Calcified Ghon focus plus calcified hilar lymph nodes, indicating
+  healed primary TB.
+
+- Pleural effusion: Common manifestation, particularly in children and young adults.
+  Usually unilateral. More frequent in HIV-positive patients.
+
+- Miliary pattern: Fine (1-3mm) nodules diffusely scattered throughout both lungs,
+  indicating hematogenous dissemination. CXR may be normal in 25-40% of early cases.
+
+- Normal radiograph: Primary TB can present with a completely normal chest X-ray
+  in many cases, particularly early in infection.
+
+1.2 POST-PRIMARY (REACTIVATION) TUBERCULOSIS
+
+Post-primary TB occurs from reactivation of latent infection or reinfection.
+Classic radiographic findings include:
+
+- Upper lobe predominance: Strong predilection for the apical and posterior segments
+  of the upper lobes, and the superior segments of the lower lobes. This distribution
+  is due to higher oxygen tension in these regions favoring mycobacterial growth.
+
+- Cavitation: Present in approximately 40-50% of post-primary TB cases. Thick-walled
+  cavities with surrounding consolidation suggest active disease. Air-fluid levels
+  within cavities may indicate superimposed bacterial or fungal infection. Thin-walled
+  cavities may represent healed or chronic disease.
+
+- Consolidation: Focal, patchy, or poorly defined opacities, predominantly in the
+  upper lung zones. May be unilateral or bilateral.
+
+- Fibronodular opacities: Irregular, patchy opacities with linear densities suggesting
+  fibrosis, typically in the upper lobes.
+
+- Tree-in-bud pattern: 2-4mm centrilobular nodules connected to branching linear
+  structures (best seen on CT), highly suggestive of endobronchial spread of TB.
+
+- Tuberculoma: Rounded, well-defined nodular lesion, typically 1-3cm in diameter,
+  representing an encapsulated granuloma. May contain central calcification.
+
+- Bronchogenic spread: Ill-defined nodular opacities scattered through the lung,
+  resulting from endobronchial dissemination of infected material.
+
+1.3 MILIARY TUBERCULOSIS
+
+- Characterized by numerous tiny (1-3mm) nodules uniformly distributed throughout
+  both lungs, representing hematogenous dissemination.
+- Nodules may be sharply or poorly defined.
+- CXR may be normal in 25-40% of early cases.
+- CT is more sensitive than CXR for early detection.
+- Associated with interstitial septal thickening.
+- Occurs more frequently in immunocompromised patients.
+
+1.4 TB IN HIV-POSITIVE PATIENTS
+
+Radiographic manifestations can be atypical:
+- Lower and middle lobe involvement more common
+- Less cavitation
+- More frequent lymphadenopathy
+- Miliary pattern more common
+- Normal CXR more frequent (up to 22%)
+- Pleural effusion more common
+- Atypical consolidation patterns
+
+=====================================================================
+SECTION 2: CHEST X-RAY AS SCREENING TOOL FOR TB
+=====================================================================
+
+2.1 WHO RECOMMENDATIONS
+
+According to WHO consolidated guidelines on tuberculosis:
+
+- CXR is recommended as a screening tool for TB in:
+  * People living with HIV
+  * Close contacts of TB patients
+  * Prisoners and other high-risk populations
+  * Populations with high TB burden
+
+- CXR has sensitivity of approximately 87-98% for active pulmonary TB when
+  interpreted by an expert reader.
+
+- Specificity ranges from 56-75% depending on the population and reader experience.
+
+- CXR should be used in combination with other diagnostic tools for TB confirmation.
+
+2.2 COMPUTER-AIDED DETECTION (CAD)
+
+- WHO recommends CAD as an alternative to human interpretation of CXR
+  for TB screening (since 2021 guidelines update).
+- CAD systems can achieve sensitivity comparable to expert radiologists.
+- Particularly useful in resource-limited settings with limited access
+  to trained radiologists.
+- Multiple CAD products have been evaluated and shown high accuracy.
+
+2.3 LIMITATIONS OF CHEST X-RAY FOR TB
+
+- Cannot definitively confirm TB (other diseases can mimic TB appearances)
+- Inter-reader variability is significant (kappa values 0.3-0.6)
+- Sensitivity decreases in:
+  * Immunocompromised patients (HIV, diabetes)
+  * Early disease
+  * Smear-negative TB
+  * Extrapulmonary TB
+- Specificity is limited (many conditions can mimic TB)
+- Normal CXR does not completely exclude pulmonary TB
+
+=====================================================================
+SECTION 3: DIFFERENTIAL DIAGNOSIS
+=====================================================================
+
+Conditions that can mimic tuberculosis on chest X-ray:
+
+3.1 Upper Lobe Lesions:
+- Sarcoidosis
+- Fungal infections (histoplasmosis, coccidioidomycosis)
+- Lung cancer (primary bronchogenic carcinoma)
+- Pneumoconiosis (silicosis)
+- Ankylosing spondylitis
+
+3.2 Cavitary Lesions:
+- Lung abscess
+- Necrotizing pneumonia
+- Squamous cell carcinoma
+- Wegener's granulomatosis
+- Fungal infections (aspergillosis)
+
+3.3 Miliary Pattern:
+- Miliary metastases (thyroid, melanoma, renal)
+- Sarcoidosis
+- Fungal infections (histoplasmosis)
+- Pneumoconiosis
+
+3.4 Lymphadenopathy:
+- Lymphoma
+- Sarcoidosis
+- Metastatic disease
+- Other infections
+
+=====================================================================
+SECTION 4: CLINICAL ASSESSMENT AND NEXT STEPS
+=====================================================================
+
+4.1 WHEN CXR SUGGESTS TB:
+
+Recommended next steps:
+1. Sputum smear microscopy (at least 2 specimens)
+2. GeneXpert MTB/RIF (rapid molecular test): Can detect TB and rifampicin
+   resistance within 2 hours. Recommended by WHO as initial diagnostic
+   test for presumptive pulmonary TB.
+3. Mycobacterial culture (gold standard): Takes 2-8 weeks but provides
+   drug susceptibility testing.
+4. Tuberculin skin test (TST) or Interferon-Gamma Release Assay (IGRA):
+   Indicates TB infection (latent or active) but cannot distinguish between them.
+
+4.2 WHEN CXR IS NORMAL BUT CLINICAL SUSPICION EXISTS:
+
+- Consider repeat CXR in 2-4 weeks
+- Perform sputum testing regardless
+- CT scan if available (more sensitive than CXR)
+- Consider extrapulmonary TB evaluation
+
+4.3 RISK FACTORS TO CONSIDER:
+
+- Close contact with known TB case
+- HIV infection or other immunosuppression
+- Recent immigration from high-burden country
+- History of prior TB
+- Diabetes mellitus
+- Malnutrition
+- Smoking
+- Chronic kidney disease
+- Silicosis
+
+=====================================================================
+SECTION 5: TREATMENT MONITORING
+=====================================================================
+
+5.1 CXR DURING TREATMENT:
+
+- Baseline CXR at diagnosis
+- Follow-up CXR at 2 months (end of intensive phase)
+- Final CXR at treatment completion
+- Improvement should be expected but may be slow
+- Cavities may persist even after successful treatment
+- New or worsening findings may indicate treatment failure or drug resistance
+
+5.2 SIGNS OF TREATMENT RESPONSE:
+
+- Decrease in size of consolidation
+- Decrease in cavity size
+- Clearing of miliary nodules
+- Reduction in pleural effusion
+- Resolution of lymphadenopathy
+
+5.3 SIGNS OF TREATMENT FAILURE:
+
+- No improvement after 2 months
+- New cavities or enlarging existing ones
+- New areas of consolidation
+- Persistent smear positivity
+- Consider drug resistance (MDR-TB)
+
+=====================================================================
+SECTION 6: SPECIAL POPULATIONS
+=====================================================================
+
+6.1 CHILDREN:
+
+- Primary TB more common than post-primary
+- Lymphadenopathy is the hallmark finding
+- Consolidation often in middle/lower lobes
+- Cavitation less common
+- Miliary pattern more frequent
+- Diagnosis more challenging due to lower bacterial load
+
+6.2 ELDERLY:
+
+- Can present with atypical patterns
+- Lower lobe involvement more common
+- May mimic pneumonia or lung cancer
+- Cavitation still common
+
+6.3 DIABETIC PATIENTS:
+
+- Lower lobe involvement more frequent
+- Multiple cavities more common
+- Higher bacterial load typical
+- Worse treatment outcomes
+
+=====================================================================
+SECTION 7: AI AND DEEP LEARNING IN TB DETECTION
+=====================================================================
+
+7.1 ROLE OF AI/DL MODELS:
+
+- Deep learning models can achieve sensitivity >90% and specificity >90%
+  for TB detection on chest X-rays.
+- Ensemble approaches combining multiple architectures (DenseNet, ResNet,
+  EfficientNet) often outperform single models.
+- Transfer learning from pre-trained models (ImageNet, CheXpert) significantly
+  improves performance.
+
+7.2 EXPLAINABILITY:
+
+- Grad-CAM (Gradient-weighted Class Activation Mapping) can highlight image
+  regions most influential in the model's decision.
+- Clinical validation: Grad-CAM heatmaps should align with known TB-affected
+  lung regions for model decisions to be clinically trustworthy.
+- Regions of interest include:
+  * Upper lung zones for post-primary TB
+  * Hilar regions for lymphadenopathy
+  * Diffuse patterns for miliary TB
+  * Lower zones in HIV-positive or atypical presentations
+
+7.3 UNCERTAINTY ESTIMATION:
+
+- MC (Monte Carlo) Dropout enables uncertainty quantification in predictions.
+- High uncertainty flags cases that need expert review.
+- Uncertainty correlates with:
+  * Ambiguous or borderline findings
+  * Image quality issues
+  * Atypical presentations
+  * Cases at the decision boundary
+
+7.4 CLINICAL DECISION SUPPORT:
+
+- AI systems should augment, not replace, clinical judgment.
+- All positive predictions should be confirmed with microbiological testing.
+- Negative predictions do not exclude TB, especially in high-risk patients.
+- Integration with clinical data (symptoms, risk factors, lab results) improves
+  diagnostic accuracy.
+
+=====================================================================
+REFERENCES
+=====================================================================
+
+1. WHO. Consolidated guidelines on tuberculosis. Module 2: Screening. 2021.
+2. WHO. Chest radiography in tuberculosis detection. 2016.
+3. Nachiappan AC, et al. Pulmonary tuberculosis: role of radiology in diagnosis
+   and management. RadioGraphics. 2017;37(1):52-72.
+4. Lewinsohn DM, et al. Official ATS/IDSA/CDC Clinical Practice Guidelines:
+   Diagnosis of Tuberculosis in Adults and Children. Clin Infect Dis. 2017.
+5. Skoura E, et al. The Diagnostic Deceiver: Radiological Pictorial Review of
+   Tuberculosis. Diagnostics. 2020;10(6):389.
+6. Defined WHO. Global tuberculosis report 2024.
+7. International Standards for Tuberculosis Care, 3rd Ed. The Union. 2014.
+8. Qin ZZ, et al. Using artificial intelligence for TB detection. Pathogens. 2022.
