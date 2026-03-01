@@ -4,7 +4,7 @@ emoji: 🏥
 colorFrom: blue
 colorTo: indigo
 sdk: docker
-pinned: false
+pinned: true
 ---
 
 # 🫁 TB-Guard-XAI: Explainable AI for Tuberculosis Screening
