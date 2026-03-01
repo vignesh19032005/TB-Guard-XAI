@@ -7,7 +7,7 @@ torchxrayvision>=1.2.0
 timm>=0.9.0
 
 # Explainability
-pytorch-grad-cam>=1.4.0
+grad-cam>=1.4.0
 captum>=0.6.0
 
 # ML Utilities
