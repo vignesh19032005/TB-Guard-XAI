@@ -115,89 +115,61 @@ Based on CNN output and uncertainty, the system intelligently decides when to us
 
 ### System Overview
 
-```
-RURAL CLINIC (OFFLINE)                    CLOUD (ON-DEMAND)
-┌─────────────────────────┐              ┌──────────────────────┐
-│   Chest X-Ray Input     │              │                      │
-│   + Basic Demographics  │              │                      │
-└───────────┬─────────────┘              │                      │
-            │                             │                      │
-            ▼                             │                      │
-┌─────────────────────────┐              │                      │
-│  CNN ENSEMBLE (~200MB)  │              │                      │
-│  ┌────────────────────┐ │              │                      │
-│  │ DenseNet121        │ │              │                      │
-│  │ EfficientNet-B4    │ │              │                      │
-│  │ ResNet50           │ │              │                      │
-│  └─────────┬──────────┘ │              │                      │
-│            │             │              │                      │
-│  ┌─────────┴──────────┐ │              │                      │
-│  │ MC Dropout (20x)   │ │              │                      │
-│  │ Uncertainty Est.   │ │              │                      │
-│  └─────────┬──────────┘ │              │                      │
-│            │             │              │                      │
-│  ┌─────────┴──────────┐ │              │                      │
-│  │ Grad-CAM++         │ │              │                      │
-│  └─────────┬──────────┘ │              │                      │
-└────────────┼────────────┘              │                      │
-             │                            │                      │
-             ▼                            │                      │
-    ┌────────────────┐                   │                      │
-    │ TB Prob: 67.6% │                   │                      │
-    │ Uncertainty:   │                   │                      │
-    │ Low (0.103)    │                   │                      │
-    └────────┬───────┘                   │                      │
-             │                            │                      │
-             │ Decision Logic:            │                      │
-             │                            │                      │
-    ┌────────┴────────────┐              │                      │
-    │ High Confidence?    │              │                      │
-    │ (>80% & Low Unc)    │              │                      │
-    └────────┬────────────┘              │                      │
-             │                            │                      │
-        YES  │  NO                        │                      │
-             │  │                         │                      │
-    ┌────────┘  └──────────┐             │                      │
-    │                      │             │                      │
-    ▼                      ▼             │                      │
-┌─────────┐      ┌──────────────────────┼──────────────────────┤
-│ OFFLINE │      │    CLOUD VALIDATION  │                      │
-│ RESULT  │      │                      │                      │
-│ Ready!  │      │  ┌───────────────────▼─────────────────┐   │
-└─────────┘      │  │ GEMINI 2.5 FLASH VALIDATION         │   │
-                 │  │ • Validates CNN findings            │   │
-                 │  │ • Checks attention regions          │   │
-                 │  │ • Radiological assessment           │   │
-                 │  └───────────────────┬─────────────────┘   │
-                 │                      │                      │
-                 │         Complex or   │  Simple validation   │
-                 │         Symptomatic? │  sufficient?         │
-                 │                      │                      │
-                 │              YES     │     NO               │
-                 │                      │     │                │
-                 │  ┌───────────────────▼─────┴──────────┐    │
-                 │  │ MISTRAL LARGE SYNTHESIS            │    │
-                 │  │ • CNN + Gemini integration         │    │
-                 │  │ • WHO RAG evidence                 │    │
-                 │  │ • Age-specific reasoning           │    │
-                 │  │ • Comprehensive report             │    │
-                 │  └────────────────────────────────────┘    │
-                 └──────────────────────────────────────────────┘
-                                    │
-                                    ▼
-                        ┌───────────────────────┐
-                        │ FINAL CLINICAL REPORT │
-                        │ • Recommendation      │
-                        │ • Assessment          │
-                        │ • Action Plan         │
-                        └───────────────────────┘
-                                    │
-                                    ▼
-                        ┌───────────────────────┐
-                        │ DOCTOR REVIEW         │
-                        │ (if needed)           │
-                        └───────────────────────┘
-```
+TB-Guard-XAI uses a hybrid offline-first, cloud-enhanced architecture that intelligently routes cases based on confidence and uncertainty:
+
+**Stage 1: Offline CNN Ensemble (~200MB)**
+- Patient arrives at rural clinic with chest X-ray and basic demographics
+- CNN ensemble (DenseNet121 + EfficientNet-B4 + ResNet50) analyzes image locally
+- Monte Carlo Dropout (20 forward passes) estimates uncertainty
+- Grad-CAM++ generates visual attention heatmap
+- Output: TB probability, uncertainty score, attention regions
+
+**Stage 2: Intelligent Routing Decision**
+- High confidence cases (>80% probability, low uncertainty <0.15): Stop here, return offline result
+- Medium confidence cases (40-80% probability): Route to Gemini 2.5 Flash validation
+- High uncertainty cases (std >0.25): Route to Gemini 2.5 Flash validation
+- Complex/symptomatic cases: Route to full cloud pipeline
+
+**Stage 3: Gemini 2.5 Flash Validation (Cloud - On Demand)**
+- Independent radiological assessment of X-ray image
+- Cross-validates CNN attention regions and findings
+- Checks for pathological features (infiltrates, cavities, lymphadenopathy)
+- Output: Validation report confirming or questioning CNN findings
+
+**Stage 4: Mistral Large Clinical Synthesis (Cloud - Complex Cases Only)**
+- Integrates CNN predictions + Gemini validation + patient symptoms
+- Queries WHO RAG evidence from Qdrant vector database
+- Applies age-specific clinical reasoning (pediatric/adult/senior)
+- Generates comprehensive clinical report with actionable recommendations
+- Output: Structured clinical synthesis with evidence citations
+
+**Stage 5: Final Report & Doctor Review**
+- System generates PDF clinical report
+- High uncertainty cases flagged for mandatory doctor review
+- Clear action plan: confirmatory testing, treatment, or follow-up
+
+### Processing Flow Examples
+
+**Example 1: Clear Normal Case (Offline Only)**
+- Input: 35-year-old, no symptoms, routine screening
+- CNN: 8% TB probability, uncertainty 0.08 (low)
+- Decision: High confidence normal → Stop, offline result
+- Cost: $0, Time: 3 seconds
+
+**Example 2: Uncertain Case (Gemini Validation)**
+- Input: 28-year-old, mild cough, suspicious opacity
+- CNN: 62% TB probability, uncertainty 0.19 (medium)
+- Decision: Medium confidence → Route to Gemini
+- Gemini: Confirms suspicious opacity, recommends further testing
+- Cost: ~$0.01, Time: 8 seconds
+
+**Example 3: Complex Case (Full Pipeline)**
+- Input: 5-year-old child, persistent cough, night sweats, weight loss
+- CNN: 71% TB probability, uncertainty 0.22 (medium-high)
+- Decision: Pediatric + symptomatic → Full pipeline
+- Gemini: Validates hilar lymphadenopathy (pediatric TB pattern)
+- Mistral: Synthesizes findings with WHO pediatric TB guidelines, recommends GeneXpert
+- Cost: ~$0.05, Time: 15 seconds
 
 ### Technology Stack
 
@@ -207,7 +179,7 @@ RURAL CLINIC (OFFLINE)                    CLOUD (ON-DEMAND)
 - Grad-CAM++ for explainability
 
 **AI Models:**
-- Mistral Large (clinical reasoning)
+- Mistral Large (clinical reasoning & synthesis)
 - Mistral Voxtral Mini (voice transcription)
 - Mistral Small (domain validation)
 - Google Gemini 2.5 Flash (vision validation)
@@ -302,11 +274,12 @@ Trained and validated on 6 global datasets:
 - **Estimated 150 lives saved annually** through early detection
 
 ### Cost Analysis
-| Scenario | Internet | Cost/Screening | Annual Cost (10,000 screenings) |
-|----------|----------|----------------|----------------------------------|
-| Traditional Radiologist | Required | $50.00 | $500,000 |
-| Existing AI (qXR, Lunit) | Required | $2-5 | $20,000-$50,000 |
-| **TB-Guard-XAI (60% offline)** | **Optional** | **$0.02** | **$200** |
+
+<div align="center">
+
+![Cost Analysis](cost_analysis.png)
+
+</div>
 
 ### Scalability
 - **Offline model**: <200MB, runs on $300 laptop
@@ -320,19 +293,11 @@ Trained and validated on 6 global datasets:
 
 ### Comparison with Existing Solutions
 
-| Feature | qXR (Qure.ai) | Lunit INSIGHT | CAD4TB | **TB-Guard-XAI** |
-|---------|---------------|---------------|---------|------------------|
-| **Offline Capability** | ❌ Cloud only | ❌ Cloud only | ❌ Cloud only | ✅ 60-80% offline |
-| **Model Size** | Unknown | Unknown | Unknown | **<200MB** |
-| **Uncertainty Quantification** | ❌ No | ❌ No | ❌ No | ✅ MC Dropout |
-| **Independent Validation** | ❌ No | ❌ No | ❌ No | ✅ Gemini 2.5 Flash |
-| **Explainability** | ⚠️ Basic | ⚠️ Basic | ⚠️ Basic | ✅ Grad-CAM++ |
-| **Clinical Reasoning** | ❌ No | ❌ No | ❌ No | ✅ Mistral Large + RAG |
-| **Voice Input** | ❌ No | ❌ No | ❌ No | ✅ Voxtral |
-| **Age-Specific** | ❌ No | ❌ No | ❌ No | ✅ Pediatric/Adult/Senior |
-| **Cost (per screening)** | $2-5 | $2-5 | $1-3 | **$0.02** |
-| **WHO Evidence Integration** | ❌ No | ❌ No | ❌ No | ✅ RAG with WHO guidelines |
-| **Accuracy** | ~90% | ~92% | ~88% | **94.2%** |
+<div align="center">
+
+![Comparison Table](comparison_table.png)
+
+</div>
 
 **Sources:** [Nature Scientific Reports 2021](https://www.nature.com/articles/s41598-021-03265-0), [Lancet Digital Health 2024](https://www.thelancet.com/journals/landig/home)
 
@@ -431,33 +396,27 @@ Clear separation between TB and Normal cases in uncertainty space
 
 ### CNN Ensemble Results
 
-| Metric | Value | Comparison |
-|--------|-------|------------|
-| **Accuracy** | 94.2% | vs 90% (qXR), 92% (Lunit) |
-| **Sensitivity** | 96.8% | Best in class |
-| **Specificity** | 91.5% | Competitive |
-| **AUC-ROC** | 0.994 | Exceptional |
-| **ECE (Calibration)** | 0.173 | Well-calibrated |
-| **Inference Time** | 2.3s | Fast (CPU) |
-| **Model Size** | 198MB | Smallest |
+<div align="center">
+
+![CNN Ensemble Results](cnn_results.png)
+
+</div>
 
 ### Uncertainty Calibration
 
-| Uncertainty Level | Std Range | Accuracy | Action |
-|-------------------|-----------|----------|--------|
-| **Low** | <0.15 | 92% | Trust prediction |
-| **Medium** | 0.15-0.25 | 78% | Consider Gemini validation |
-| **High** | >0.25 | 45% | Require human review |
+<div align="center">
+
+![Uncertainty Calibration](uncertainty_calibration.png)
+
+</div>
 
 ### Multi-Dataset Generalization
 
-| Dataset | Accuracy | Notes |
-|---------|----------|-------|
-| Shenzhen (China) | 95.1% | Training set |
-| Montgomery (USA) | 93.8% | Training set |
-| TBX11K | 91.2% | External validation |
-| NIH ChestX-ray14 | 89.7% | External validation |
-| Belarus TB | 92.4% | External validation |
+<div align="center">
+
+![Multi-Dataset Generalization](dataset_generalization.png)
+
+</div>
 
 ---
 
