@@ -11,7 +11,7 @@ pinned: true
 
 **Built for the Mistral AI Worldwide Hackathon 2026**
 
-> An explainable, multimodal clinical decision support system combining lightweight deep learning ensemble models (<200MB) with cloud-based AI validation for mass tuberculosis screening in resource-limited settings.
+> An explainable, multimodal clinical decision support system combining lightweight deep learning ensemble models (<200MB) with cloud-based AI validation for offline, lightweight tuberculosis screening in resource-limited settings.
 
 [![Hugging Face Space](https://img.shields.io/badge/🤗_Space-Live_Demo-blue)](https://huggingface.co/spaces/mistral-hackaton-2026/TB-Guard-XAI)
 [![Demo Video](https://img.shields.io/badge/🎬_Video-Watch_Demo-red)](https://youtu.be/yUIHg6q3zHw)
