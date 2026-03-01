@@ -626,7 +626,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## ⚠️ Clinical Disclaimer
 
-**TB-Guard-XAI is a research prototype and clinical decision support tool. It is NOT a medical device and is NOT approved for clinical use.**
+**TB-Guard-XAI is a research prototype and clinical decision support tool. It is NOT a medical device and is NOT yet approved for clinical use.**
 
 - This system is designed to **assist** trained medical professionals, not replace them
 - All positive or uncertain results **MUST** be confirmed with:
