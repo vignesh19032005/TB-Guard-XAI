@@ -39,4 +39,5 @@ demo_image_results.txt
 find_demo_images.py
 test_*.py
 
-models/
+models/*.pth
+!models/ensemble_best.pth
