@@ -193,28 +193,56 @@
             <div class="flex justify-between items-center mb-2">
               <h3 class="text-slate-900 dark:text-white font-semibold text-sm flex items-center gap-2"><span
                   class="material-symbols-outlined text-primary text-lg">upload_file</span>Chest X-Ray Input</h3>
-              <span
-                class="bg-slate-100 dark:bg-slate-800 text-[10px] text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 font-mono">.jpg
-                .png</span>
-            </div>
-            <input type="file" id="fileInput" accept="image/*" class="hidden" />
-            <div id="dropZone"
-              class="border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-primary/50 hover:bg-primary/5 transition-all rounded-xl flex-1 min-h-[160px] flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden bg-slate-50/50 dark:bg-transparent">
-              <div id="uploadPrompt" class="flex flex-col items-center">
-                <div
-                  class="bg-white dark:bg-slate-800/50 p-3 rounded-full mb-2 group-hover:scale-110 transition-transform shadow-sm">
-                  <span
-                    class="material-symbols-outlined text-slate-400 text-3xl group-hover:text-primary">cloud_upload</span>
-                </div>
-                <p class="text-slate-700 dark:text-slate-300 font-medium text-sm">Drag & drop scan here</p>
-                <p class="text-slate-500 text-xs mt-0.5">or click to browse files</p>
+              <div class="flex gap-2">
+                <button id="singleModeBtn" onclick="switchMode('single')"
+                  class="bg-primary/10 text-primary text-[10px] px-2 py-1 rounded border border-primary/20 font-semibold">Single</button>
+                <button id="batchModeBtn" onclick="switchMode('batch')"
+                  class="bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] px-2 py-1 rounded border border-slate-200 dark:border-slate-700">Batch</button>
               </div>
-              <div id="previewContainer" class="hidden w-full h-full p-2"><img id="previewImage"
-                  class="w-full h-full object-contain rounded-lg max-h-[200px] mx-auto" alt="X-ray preview" /></div>
             </div>
-            <button id="clearFileBtn"
-              class="hidden mt-1.5 text-[11px] text-slate-400 hover:text-red-500 transition-colors self-end"
-              onclick="clearFile()">✕ Remove</button>
+            
+            <!-- SINGLE MODE -->
+            <div id="singleUploadSection">
+              <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp" class="hidden" />
+              <div id="dropZone"
+                class="border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-primary/50 hover:bg-primary/5 transition-all rounded-xl flex-1 min-h-[160px] flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden bg-slate-50/50 dark:bg-transparent">
+                <div id="uploadPrompt" class="flex flex-col items-center">
+                  <div
+                    class="bg-white dark:bg-slate-800/50 p-3 rounded-full mb-2 group-hover:scale-110 transition-transform shadow-sm">
+                    <span
+                      class="material-symbols-outlined text-slate-400 text-3xl group-hover:text-primary">cloud_upload</span>
+                  </div>
+                  <p class="text-slate-700 dark:text-slate-300 font-medium text-sm">Drag & drop scan here</p>
+                  <p class="text-slate-500 text-xs mt-0.5">or click to browse files</p>
+                </div>
+                <div id="previewContainer" class="hidden w-full h-full p-2"><img id="previewImage"
+                    class="w-full h-full object-contain rounded-lg max-h-[200px] mx-auto" alt="X-ray preview" /></div>
+              </div>
+              <button id="clearFileBtn"
+                class="hidden mt-1.5 text-[11px] text-slate-400 hover:text-red-500 transition-colors self-end"
+                onclick="clearFile()">✕ Remove</button>
+            </div>
+            
+            <!-- BATCH MODE -->
+            <div id="batchUploadSection" class="hidden">
+              <input type="file" id="batchFileInput" accept="image/jpeg,image/jpg,image/png,image/webp" multiple class="hidden" />
+              <div id="batchDropZone"
+                class="border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-primary/50 hover:bg-primary/5 transition-all rounded-xl min-h-[160px] flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden bg-slate-50/50 dark:bg-transparent">
+                <div id="batchUploadPrompt" class="flex flex-col items-center">
+                  <div
+                    class="bg-white dark:bg-slate-800/50 p-3 rounded-full mb-2 group-hover:scale-110 transition-transform shadow-sm">
+                    <span
+                      class="material-symbols-outlined text-slate-400 text-3xl group-hover:text-primary">folder_open</span>
+                  </div>
+                  <p class="text-slate-700 dark:text-slate-300 font-medium text-sm">Select multiple X-rays</p>
+                  <p class="text-slate-500 text-xs mt-0.5">Up to 100 images • Reports generated for each</p>
+                </div>
+              </div>
+              <div id="batchFileList" class="hidden mt-2 max-h-[120px] overflow-y-auto space-y-1"></div>
+              <button id="clearBatchBtn"
+                class="hidden mt-1.5 text-[11px] text-slate-400 hover:text-red-500 transition-colors self-end"
+                onclick="clearBatch()">✕ Clear All</button>
+            </div>
           </div>
           <!-- SYMPTOMS -->
           <div class="lg:col-span-5 glass-panel rounded-2xl p-4 flex flex-col gap-2.5">
@@ -255,8 +283,17 @@
         <!-- ANALYZE BTN -->
         <button id="analyzeBtn" onclick="runAnalysis()"
           class="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary-dark hover:to-blue-700 text-white py-3 rounded-xl font-bold text-sm transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-          <span class="material-symbols-outlined text-lg">rocket_launch</span> Run Comprehensive AI Screening
+          <span class="material-symbols-outlined text-lg">rocket_launch</span> <span id="analyzeBtnText">Run Comprehensive AI Screening</span>
         </button>
+        
+        <!-- BATCH PROGRESS -->
+        <div id="batchProgress" class="hidden glass-panel rounded-xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Batch Processing</h3>
+            <span id="batchProgressText" class="text-xs text-primary font-mono">0 / 0</span>
+          </div>
+          <div id="batchImageList" class="space-y-2 max-h-[400px] overflow-y-auto"></div>
+        </div>
 
         <!-- PIPELINE -->
         <div id="pipelineSection" class="hidden glass-panel rounded-xl p-3 border-l-4 border-l-primary">
@@ -451,27 +488,21 @@
     /* ── STATE ──────────────────────────────────── */
     let selectedFile = null, mediaRecorder = null, audioChunks = [], isRecording = false;
     let lastAnalysisData = null; // stored for follow-up context
+    let currentMode = 'single'; // 'single' or 'batch'
+    let batchFiles = [];
 
     function saveState() {
       const state = {
-        symptoms: document.getElementById('symptomsText').value,
-        ageGroup: document.getElementById('patientAge').value,
+        symptoms: document.getElementById('symptomsText')?.value || '',
+        ageGroup: document.getElementById('patientAge')?.value || 'Adult (40-64)',
         analysisData: lastAnalysisData
       };
-      const img = document.getElementById('previewImage').src;
+      const img = document.getElementById('previewImage')?.src;
       if (img && img.startsWith('data:')) state.imageSrc = img;
       try { sessionStorage.setItem('dashboardState', JSON.stringify(state)); } catch (e) { }
     }
-    document.getElementById('symptomsText').addEventListener('input', saveState);
 
     /* ── FILE UPLOAD ────────────────────────────── */
-    const fileInput = document.getElementById('fileInput'), dropZone = document.getElementById('dropZone');
-    dropZone.addEventListener('click', () => fileInput.click());
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('border-primary', 'bg-primary/5'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-primary', 'bg-primary/5'));
-    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('border-primary', 'bg-primary/5'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
-    fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
-
     function handleFile(file) {
       if (!file.type.startsWith('image/')) { alert('Please upload an image.'); return; }
       selectedFile = file;
@@ -535,6 +566,11 @@
 
     /* ── ANALYSIS ───────────────────────────────── */
     async function runAnalysis() {
+      // Check mode and delegate
+      if (currentMode === 'batch') {
+        return runBatchAnalysis();
+      }
+      
       if (!selectedFile) { alert('Upload a chest X-ray first.'); return; }
       const btn = document.getElementById('analyzeBtn');
       btn.disabled = true; btn.innerHTML = '<span class="animate-spin material-symbols-outlined text-lg">progress_activity</span> Analyzing...';
@@ -753,6 +789,98 @@
     }
 
     /* ── REPORT ─────────────────────────────────── */
+    function generateBatchPDF(result) {
+      // Use the same HTML template as single report
+      const pred = result.prediction.toLowerCase().includes('tb') || result.prediction.toLowerCase().includes('tuberculosis') ? 'Positive' : 'Negative';
+      const isTB = pred === 'Positive';
+      const prob = `${(result.probability * 100).toFixed(1)}%`;
+      const conf = `${((result.probability > 0.5 ? result.probability : (1 - result.probability)) * 100).toFixed(1)}%`;
+      const unc = result.uncertainty;
+      const reasoningHtml = formatExplanation(result.explanation || 'No explanation available');
+      const now = new Date().toLocaleString();
+      
+      // Original image
+      let origSrc = '';
+      if (result.original_image) {
+        origSrc = result.original_image.startsWith('data:') ? result.original_image : `data:image/png;base64,${result.original_image}`;
+      }
+      
+      // GradCAM image
+      let gcSrc = '';
+      if (result.gradcam_image) {
+        gcSrc = result.gradcam_image.startsWith('data:') ? result.gradcam_image : `data:image/png;base64,${result.gradcam_image}`;
+      }
+      
+      const html = `<!DOCTYPE html><html><head><title>TB-Guard-XAI Clinical Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;color:#1e293b;padding:40px 50px;max-width:900px;margin:0 auto;position:relative;line-height:1.7}
+.watermark{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:80px;font-weight:900;color:rgba(13,128,242,0.04);white-space:nowrap;pointer-events:none;z-index:0;letter-spacing:6px}
+.content{position:relative;z-index:1}
+.header{text-align:center;border-bottom:3px solid #0d80f2;padding-bottom:20px;margin-bottom:28px}
+.header h1{color:#0d80f2;font-size:22px;font-weight:700;letter-spacing:-0.02em}
+.header p{color:#64748b;font-size:11px;margin-top:6px}
+.section{border:1.5px solid #e2e8f0;border-radius:10px;padding:20px 24px;margin-bottom:16px;page-break-inside:avoid}
+.section h2{font-size:11px;font-weight:700;text-transform:uppercase;color:#0d80f2;margin-bottom:10px;letter-spacing:0.06em;border-bottom:1px solid #f1f5f9;padding-bottom:6px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.metric{border:1.5px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}
+.metric-label{font-size:9px;text-transform:uppercase;color:#64748b;font-weight:600;letter-spacing:0.05em}
+.metric-value{font-size:20px;font-weight:700;margin-top:4px}
+.images-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.img-card{border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;text-align:center;background:#f8fafc}
+.img-card img{width:100%;height:200px;object-fit:contain;background:#000}
+.img-card .img-label{padding:6px 0;font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em}
+.reasoning{font-size:12px;line-height:1.8}
+.reasoning h2{font-size:14px;font-weight:700;color:#0d80f2;margin:16px 0 8px;border-bottom:2px solid #0d80f2;padding-bottom:4px;page-break-after:avoid}
+.reasoning h3{font-size:13px;font-weight:700;color:#1e293b;margin:14px 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px;page-break-after:avoid}
+.reasoning h4{font-size:11px;font-weight:700;color:#0d80f2;margin:10px 0 4px;text-transform:uppercase;letter-spacing:0.03em;page-break-after:avoid}
+.reasoning p{margin-bottom:8px;text-align:justify}
+.reasoning ul,.reasoning ol{margin:6px 0 10px 18px;line-height:1.7}
+.reasoning li{margin-bottom:4px}
+.reasoning strong{color:#1e293b;font-weight:600}
+.reasoning table{width:100%;border-collapse:collapse;margin:10px 0;font-size:11px;page-break-inside:avoid}
+.reasoning th,.reasoning td{padding:8px;border:1px solid #e2e8f0;text-align:left;vertical-align:top}
+.reasoning th{background:#f8fafc;font-weight:600}
+.reasoning hr{border:none;border-top:1px solid #e2e8f0;margin:12px 0}
+.disclaimer{background:#fef3c7;border:1.5px solid #fbbf24;border-radius:8px;padding:10px 14px;margin-top:14px;font-size:10px;color:#92400e}
+.footer{text-align:center;border-top:2px solid #e2e8f0;padding-top:14px;margin-top:20px;padding-bottom:10px}
+.footer p{color:#94a3b8;font-size:9px;line-height:1.5}
+@media print{ @page { size: auto; margin: 0; } body{padding:15mm} .content{page-break-after:avoid} html,body{height:auto;min-height:100vh} }
+</style></head><body>
+<div class="watermark">TB-GUARD-XAI</div>
+<div class="content">
+<div class="header"><h1>TB-Guard-XAI Clinical Screening Report</h1><p>Generated: ${now} &bull; AI-Assisted Screening &mdash; Not for Self-Diagnosis</p></div>
+<div class="metrics">
+<div class="metric"><div class="metric-label">Prediction</div><div class="metric-value" style="color:${isTB ? '#ef4444' : '#10b981'}">${pred}</div></div>
+<div class="metric"><div class="metric-label">TB Probability</div><div class="metric-value" style="color:#0d80f2">${prob}</div></div>
+<div class="metric"><div class="metric-label">Confidence</div><div class="metric-value">${conf}</div></div>
+<div class="metric"><div class="metric-label">Uncertainty</div><div class="metric-value">${unc}</div></div>
+</div>
+${(origSrc || gcSrc) ? `<div class="images-grid">${origSrc ? `<div class="img-card"><img src="${origSrc}" alt="Input X-ray"/><div class="img-label">Input Chest X-Ray</div></div>` : ''}${gcSrc ? `<div class="img-card"><img src="${gcSrc}" alt="Grad-CAM++"/><div class="img-label">Grad-CAM++ Attention Map</div></div>` : ''}</div>` : ''}
+<div class="section"><h2>Image Information</h2><p style="font-size:11px">Filename: ${result.filename}</p></div>
+<div class="section"><h2>Comprehensive Clinical Synthesis &mdash; CNN + Gemini 2.5 Flash + Mistral Large + RAG</h2><div class="reasoning">${reasoningHtml}</div></div>
+<div class="disclaimer">&#x26A0;&#xFE0F; <strong>Disclaimer:</strong> This report is AI-generated for screening support only. All findings require confirmation through microbiological testing and clinical assessment by a qualified professional.</div>
+<div class="footer"><p>TB-Guard-XAI v2.0 | Mistral AI Hackathon 2026 | Architecture: CNN Ensemble + Gemini 2.5 Flash Validator + Mistral Large + WHO RAG</p><p>&copy; 2026 TB-Guard-XAI. Medical Grade Prototype.</p></div>
+</div></body></html>`;
+
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0'; iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
+      document.body.appendChild(iframe);
+      const doc = iframe.contentWindow.document;
+      doc.open(); doc.write(html); doc.close();
+      
+      // Set filename for download
+      const filename = result.filename.replace(/\.[^/.]+$/, '') + '_report.pdf';
+      
+      setTimeout(() => {
+        iframe.contentWindow.document.title = filename;
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        setTimeout(() => document.body.removeChild(iframe), 1000);
+      }, 800);
+    }
+    
     function generateReport() {
       const pred = document.getElementById('predictionLabel').textContent;
       if (pred === '—') { alert('Run analysis first.'); return; }
@@ -829,7 +957,12 @@ ${symptoms ? `<div class="section"><h2>Reported Symptoms</h2><p style="font-size
       document.body.appendChild(iframe);
       const doc = iframe.contentWindow.document;
       doc.open(); doc.write(html); doc.close();
+      
+      // Set filename based on original input image
+      const filename = selectedFile ? selectedFile.name.replace(/\.[^/.]+$/, '') + '_report.pdf' : 'TB_Guard_XAI_Report.pdf';
+      
       setTimeout(() => {
+        iframe.contentWindow.document.title = filename;
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
         setTimeout(() => document.body.removeChild(iframe), 1000);
@@ -848,13 +981,305 @@ ${symptoms ? `<div class="section"><h2>Reported Symptoms</h2><p style="font-size
     /* ── THEME ──────────────────────────────────── */
     function toggleTheme() { const h = document.documentElement, l = document.getElementById('themeLabel'); if (h.classList.contains('dark')) { h.classList.remove('dark'); l.textContent = 'Light'; localStorage.setItem('theme', 'light'); } else { h.classList.add('dark'); l.textContent = 'Dark'; localStorage.setItem('theme', 'dark'); } }
 
+    /* ── BATCH PROCESSING ───────────────────────── */
+    function switchMode(mode) {
+      currentMode = mode;
+      const singleBtn = document.getElementById('singleModeBtn');
+      const batchBtn = document.getElementById('batchModeBtn');
+      const singleSection = document.getElementById('singleUploadSection');
+      const batchSection = document.getElementById('batchUploadSection');
+      const analyzeBtn = document.getElementById('analyzeBtnText');
+      
+      if (mode === 'single') {
+        singleBtn.className = 'bg-primary/10 text-primary text-[10px] px-2 py-1 rounded border border-primary/20 font-semibold';
+        batchBtn.className = 'bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] px-2 py-1 rounded border border-slate-200 dark:border-slate-700';
+        singleSection.classList.remove('hidden');
+        batchSection.classList.add('hidden');
+        analyzeBtn.textContent = 'Run Comprehensive AI Screening';
+      } else {
+        batchBtn.className = 'bg-primary/10 text-primary text-[10px] px-2 py-1 rounded border border-primary/20 font-semibold';
+        singleBtn.className = 'bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] px-2 py-1 rounded border border-slate-200 dark:border-slate-700';
+        batchSection.classList.remove('hidden');
+        singleSection.classList.add('hidden');
+        analyzeBtn.textContent = 'Process Batch & Download Reports';
+      }
+    }
+    
+    function setupBatchHandlers() {
+      // Batch file handling
+      const batchFileInput = document.getElementById('batchFileInput');
+      const batchDropZone = document.getElementById('batchDropZone');
+      
+      if (!batchFileInput || !batchDropZone) {
+        console.error('Batch elements not found');
+        return;
+      }
+      
+      batchDropZone.addEventListener('click', () => batchFileInput.click());
+      batchDropZone.addEventListener('dragover', e => { e.preventDefault(); batchDropZone.classList.add('border-primary', 'bg-primary/5'); });
+      batchDropZone.addEventListener('dragleave', () => batchDropZone.classList.remove('border-primary', 'bg-primary/5'));
+      batchDropZone.addEventListener('drop', e => { 
+        e.preventDefault(); 
+        batchDropZone.classList.remove('border-primary', 'bg-primary/5'); 
+        if (e.dataTransfer.files.length) handleBatchFiles(Array.from(e.dataTransfer.files)); 
+      });
+      batchFileInput.addEventListener('change', e => { 
+        if (e.target.files.length) handleBatchFiles(Array.from(e.target.files)); 
+      });
+    }
+    
+    function handleBatchFiles(files) {
+      const imageFiles = files.filter(f => f.type.startsWith('image/'));
+      if (imageFiles.length === 0) {
+        alert('Please select image files only.');
+        return;
+      }
+      if (imageFiles.length > 100) {
+        alert('Maximum 100 files allowed. Only first 100 will be processed.');
+        imageFiles = imageFiles.slice(0, 100);
+      }
+      
+      batchFiles = imageFiles;
+      document.getElementById('batchUploadPrompt').classList.add('hidden');
+      document.getElementById('batchFileList').classList.remove('hidden');
+      document.getElementById('clearBatchBtn').classList.remove('hidden');
+      
+      const listEl = document.getElementById('batchFileList');
+      listEl.innerHTML = '';
+      batchFiles.forEach((file, idx) => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 px-2 py-1 rounded text-xs';
+        div.innerHTML = `<span class="material-symbols-outlined text-primary text-sm">image</span><span class="flex-1 truncate text-slate-700 dark:text-slate-300">${file.name}</span><span class="text-slate-400 text-[10px]">${(file.size / 1024).toFixed(0)}KB</span>`;
+        listEl.appendChild(div);
+      });
+      
+      addTraceLog('System', `${batchFiles.length} images loaded for batch processing`);
+    }
+    
+    function clearBatch() {
+      batchFiles = [];
+      batchFileInput.value = '';
+      document.getElementById('batchUploadPrompt').classList.remove('hidden');
+      document.getElementById('batchFileList').classList.add('hidden');
+      document.getElementById('clearBatchBtn').classList.add('hidden');
+      document.getElementById('batchFileList').innerHTML = '';
+    }
+    
+    async function runBatchAnalysis() {
+      if (batchFiles.length === 0) {
+        alert('Please select images for batch processing.');
+        return;
+      }
+      
+      const btn = document.getElementById('analyzeBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-spin material-symbols-outlined text-lg">progress_activity</span> Processing Batch...';
+      
+      const progressSection = document.getElementById('batchProgress');
+      const imageList = document.getElementById('batchImageList');
+      progressSection.classList.remove('hidden');
+      imageList.innerHTML = '';
+      
+      // Create progress items for each file
+      const progressItems = {};
+      batchFiles.forEach((file, idx) => {
+        const itemId = `batch-item-${idx}`;
+        const div = document.createElement('div');
+        div.id = itemId;
+        div.className = 'bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-200 dark:border-slate-700';
+        div.innerHTML = `
+          <div class="flex items-center gap-2 mb-2">
+            <img id="${itemId}-thumb" class="w-12 h-12 object-cover rounded border border-slate-200 dark:border-slate-600" src="" alt="thumbnail">
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-medium text-slate-900 dark:text-white truncate">${file.name}</div>
+              <div id="${itemId}-status" class="text-[10px] text-slate-500 dark:text-slate-400">Waiting...</div>
+            </div>
+            <div id="${itemId}-result" class="hidden">
+              <span class="material-symbols-outlined text-lg"></span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+            <div id="${itemId}-bar" class="h-full rounded-full transition-all duration-300" style="width:0%"></div>
+          </div>
+        `;
+        imageList.appendChild(div);
+        
+        // Create thumbnail
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById(`${itemId}-thumb`).src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        
+        progressItems[file.name] = itemId;
+      });
+      
+      const formData = new FormData();
+      batchFiles.forEach(file => {
+        formData.append('files', file);
+      });
+      
+      try {
+        addTraceLog('System', `Starting batch processing of ${batchFiles.length} images...`);
+        
+        const res = await fetch('/batch_analyze_stream', { 
+          method: 'POST', 
+          body: formData 
+        });
+        
+        if (!res.ok) {
+          throw new Error('Batch processing failed');
+        }
+        
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = JSON.parse(line.substring(6));
+              
+              if (data.type === 'start') {
+                document.getElementById('batchProgressText').textContent = `0 / ${data.total}`;
+                addTraceLog('System', `Processing ${data.total} images...`);
+              }
+              else if (data.type === 'processing') {
+                document.getElementById('batchProgressText').textContent = `${data.current} / ${data.total}`;
+                
+                const itemId = progressItems[data.filename];
+                if (itemId) {
+                  document.getElementById(`${itemId}-status`).textContent = 'Analyzing...';
+                  document.getElementById(`${itemId}-bar`).style.width = '50%';
+                  document.getElementById(`${itemId}-bar`).className = 'h-full rounded-full transition-all duration-300 bg-primary';
+                }
+                
+                addTraceLog('System', `[${data.current}/${data.total}] Analyzing ${data.filename}...`);
+              }
+              else if (data.type === 'success') {
+                const itemId = progressItems[data.filename];
+                if (itemId) {
+                  const isTB = data.prediction.toLowerCase().includes('tb') || data.prediction.toLowerCase().includes('tuberculosis');
+                  
+                  document.getElementById(`${itemId}-status`).textContent = `${data.prediction} (${(data.probability * 100).toFixed(1)}%)`;
+                  document.getElementById(`${itemId}-status`).className = `text-[10px] font-medium ${isTB ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`;
+                  document.getElementById(`${itemId}-bar`).style.width = '100%';
+                  document.getElementById(`${itemId}-bar`).className = `h-full rounded-full transition-all duration-300 ${isTB ? 'bg-red-500' : 'bg-emerald-500'}`;
+                  
+                  const resultIcon = document.getElementById(`${itemId}-result`);
+                  resultIcon.classList.remove('hidden');
+                  resultIcon.querySelector('.material-symbols-outlined').textContent = isTB ? 'warning' : 'check_circle';
+                  resultIcon.querySelector('.material-symbols-outlined').className = `material-symbols-outlined text-lg ${isTB ? 'text-red-500' : 'text-emerald-500'}`;
+                }
+                
+                const icon = data.prediction.toLowerCase().includes('tb') ? '⚠️' : '✓';
+                addTraceLog('System', `${icon} ${data.filename}: ${data.prediction} (${(data.probability * 100).toFixed(1)}%)`);
+              }
+              else if (data.type === 'error') {
+                const itemId = progressItems[data.filename];
+                if (itemId) {
+                  document.getElementById(`${itemId}-status`).textContent = `Error: ${data.error}`;
+                  document.getElementById(`${itemId}-status`).className = 'text-[10px] text-red-600 dark:text-red-400';
+                  document.getElementById(`${itemId}-bar`).style.width = '100%';
+                  document.getElementById(`${itemId}-bar`).className = 'h-full rounded-full transition-all duration-300 bg-red-500';
+                  
+                  const resultIcon = document.getElementById(`${itemId}-result`);
+                  resultIcon.classList.remove('hidden');
+                  resultIcon.querySelector('.material-symbols-outlined').textContent = 'error';
+                  resultIcon.querySelector('.material-symbols-outlined').className = 'material-symbols-outlined text-lg text-red-500';
+                }
+                
+                addTraceLog('Error', `✗ ${data.filename}: ${data.error}`);
+              }
+              else if (data.type === 'complete') {
+                document.getElementById('batchProgressText').textContent = `${data.processed} / ${data.total} Complete`;
+                addTraceLog('System', `✅ Batch complete: ${data.processed}/${data.total} successful`);
+                
+                // Fetch full results from server
+                addTraceLog('System', '📄 Fetching results...');
+                
+                fetch(data.results_url)
+                  .then(res => res.json())
+                  .then(batchData => {
+                    addTraceLog('System', '✓ Results loaded, generating PDFs...');
+                    
+                    // Generate PDFs for all successful results
+                    batchData.results.forEach((result, idx) => {
+                      if (result.status === 'success') {
+                        setTimeout(() => {
+                          generateBatchPDF(result);
+                        }, idx * 500); // Stagger PDF generation
+                      }
+                    });
+                    
+                    addTraceLog('System', '✓ All reports generated');
+                  })
+                  .catch(err => {
+                    addTraceLog('Error', 'Failed to fetch results: ' + err.message);
+                  });
+              }
+            }
+          }
+        }
+        
+      } catch (e) {
+        addTraceLog('Error', e.message);
+        alert('Batch processing error: ' + e.message);
+      }
+      
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-lg">rocket_launch</span> <span id="analyzeBtnText">Process Batch & Download Reports</span>';
+    }
+
     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
     /* ── INIT ───────────────────────────────────── */
+    function setupEventListeners() {
+      // Symptoms input
+      const symptomsText = document.getElementById('symptomsText');
+      if (symptomsText) {
+        symptomsText.addEventListener('input', saveState);
+      }
+      
+      // Single file upload
+      const fileInput = document.getElementById('fileInput');
+      const dropZone = document.getElementById('dropZone');
+      
+      if (fileInput && dropZone) {
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => { 
+          e.preventDefault(); 
+          dropZone.classList.add('border-primary', 'bg-primary/5'); 
+        });
+        dropZone.addEventListener('dragleave', () => {
+          dropZone.classList.remove('border-primary', 'bg-primary/5');
+        });
+        dropZone.addEventListener('drop', e => { 
+          e.preventDefault(); 
+          dropZone.classList.remove('border-primary', 'bg-primary/5'); 
+          if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); 
+        });
+        fileInput.addEventListener('change', e => { 
+          if (e.target.files.length) handleFile(e.target.files[0]); 
+        });
+      }
+      
+      // Setup batch handlers
+      setupBatchHandlers();
+    }
+    
     document.addEventListener('DOMContentLoaded', async () => {
+      // Setup all event listeners
+      setupEventListeners();
+      
       if (localStorage.getItem('theme') === 'light') { document.documentElement.classList.remove('dark'); document.getElementById('themeLabel').textContent = 'Light'; }
       addTraceLog('System', 'TB-Guard-XAI v2.0 ready.');
-
+      
       // Load demo case from gallery
       const dc = sessionStorage.getItem('demoCase');
       if (dc) {

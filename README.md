@@ -244,20 +244,20 @@ TB-Guard-XAI uses a hybrid offline-first, cloud-enhanced architecture that intel
 - **PDF Generation**: One-click printable reports
 - **Action Plans**: Clear next steps for clinicians
 
-### 8. Google Drive Batch Processing 🆕
-- **Automatic Processing**: Upload X-rays to Google Drive, get reports automatically
-- **Batch Analysis**: Process hundreds of X-rays overnight
-- **Cloud Integration**: Accessible from anywhere, perfect for telemedicine
-- **Zero Manual Work**: Drop files in folder, reports appear automatically
-- **Audit Trail**: All processed X-rays and reports stored in organized folders
+### 8. Batch Processing 🆕
+- **Multi-Image Upload**: Process up to 100 X-rays at once
+- **Individual Reports**: PDF report generated for each image
+- **Preserved Filenames**: Reports match input image names
+- **Perfect for Clinics**: Batch screening for multiple patients
+- **No Cloud Setup**: Works entirely locally, no external services needed
 
-**Setup Guide**: See [GDRIVE_SETUP.md](GDRIVE_SETUP.md) for Google Drive integration
+**Note:** This is a simplified version of the original Google Drive integration concept. The initial design involved automatic report generation for images uploaded to Google Drive using Google Drive API and real-time deployment via Google Cloud Console. However, due to the complexity of Google Drive API setup and cloud deployment requirements, this streamlined local batch processing version was implemented to provide the same core functionality without external dependencies.
 
 ---
 
 ## 📊 Performance Metrics
 
-### Exceptional Results
+### Internal Validation (Held-Out Test Set)
 - **Accuracy**: 97.8% on held-out test set (4,219 images)
 - **Sensitivity**: 94.7% (TB detection)
 - **Specificity**: 98.9% (Normal classification)
@@ -274,6 +274,28 @@ TB-Guard-XAI uses a hybrid offline-first, cloud-enhanced architecture that intel
 - False Negatives: 60 | True Positives: 1,077
 
 </div>
+
+### External Validation (DA Dataset - Pakistan)
+
+To assess generalization to unseen geographic populations, we validated TB-Guard-XAI on the DA dataset from Pakistan (n=156 images, completely excluded from training).
+
+**Results:**
+- **Accuracy**: 67.3%
+- **Sensitivity**: 85.7% (TB detection)
+- **Specificity**: 52.9% (Normal classification)
+- **AUC-ROC**: 0.721
+
+**Analysis:**
+The model demonstrated moderate generalization to the South Asian population, with a 30.5% accuracy drop compared to the held-out test set. The model maintained high sensitivity (85.7%) but showed lower specificity (52.9%), indicating a bias toward predicting TB. This domain shift highlights the importance of including diverse geographic populations in training data.
+
+**Clinical Implications:**
+While the lower specificity results in more false alarms, the 85.7% sensitivity suggests the model could still serve as a first-line triage tool in resource-limited settings, with all positive cases requiring confirmatory testing (sputum microscopy, GeneXpert MTB/RIF).
+
+**Key Findings:**
+- ✅ High sensitivity maintained across populations (screening priority)
+- ⚠️ Domain shift observed with different imaging equipment/populations
+- 💡 Model prioritizes not missing TB cases (clinically appropriate for screening)
+- 🔬 Demonstrates need for fine-tuning on target population data
 
 ### Uncertainty Calibration
 - **Low Uncertainty (<0.15 std)**: 92% prediction accuracy
@@ -297,8 +319,8 @@ TB-Guard-XAI uses a hybrid offline-first, cloud-enhanced architecture that intel
 
 *Note: All datasets were split 70/15/15 for train/val/test to ensure no data leakage*
 
-### Multi-Dataset Validation
-Trained and validated on 6 global datasets ensuring robust generalization:
+### Training Datasets
+Trained on 4 diverse global datasets ensuring robust generalization:
 
 1. **[Shenzhen TB Dataset](https://data.lhncbc.nlm.nih.gov/public/Tuberculosis-Chest-X-ray-Datasets/)** (China) - 662 images
    - Direct download: [NIH LHNCBC](https://data.lhncbc.nlm.nih.gov/public/Tuberculosis-Chest-X-ray-Datasets/Shenzhen-Hospital-CXR-Set.zip)
@@ -308,20 +330,22 @@ Trained and validated on 6 global datasets ensuring robust generalization:
    - Direct download: [NIH LHNCBC](https://data.lhncbc.nlm.nih.gov/public/Tuberculosis-Chest-X-ray-Datasets/Montgomery-County-CXR-Set.zip)
    - Alternative: [Academic Torrents](https://academictorrents.com/details/ac786f74878a5775c81d490b23842fd4736bfe33)
 
-3. **[NIH ChestX-ray14 Dataset](https://www.nih.gov/news-events/news-releases/nih-clinical-center-provides-one-largest-publicly-available-chest-x-ray-datasets-scientific-community)** - 112,120 images
-   - Download: [Academic Torrents](https://academictorrents.com/details/557481faacd824c83fbf57dcf7b6da9383b3235a)
-   - Alternative: [Hugging Face](https://huggingface.co/datasets/alkzar90/NIH-Chest-X-ray-dataset)
-
-4. **[TBX11K Dataset](https://arxiv.org/abs/2007.15073)** - 11,200 images with bounding boxes
+3. **[TBX11K Dataset](https://arxiv.org/abs/2007.15073)** - 11,200 images with bounding boxes
    - Download: [Academic Torrents](https://academictorrents.com/details/07a9e9d43be209b1547f4829c9cb376f30551d6c)
    - Alternative: [GTS.AI](https://gts.ai/dataset-download/tbx-11/)
 
-5. **[Belarus TB Portal](https://tbportals.niaid.nih.gov/)** - 1,049 drug-resistant TB images
-   - Download: [Academic Torrents](https://academictorrents.com/details/509f986b456b6fce04c15f9d1de22cd4ccb2c4b7)
-   - Official: [TB Portals](https://tbportals.niaid.nih.gov/download-data) (requires data usage agreement)
+4. **[Kaggle TB Chest X-ray Dataset](https://www.kaggle.com/datasets/tawsifurrahman/tuberculosis-tb-chest-xray-dataset)** - 4,200 images
+   - Download: [Kaggle](https://www.kaggle.com/datasets/tawsifurrahman/tuberculosis-tb-chest-xray-dataset)
 
-6. **[DA/DR TB Dataset](https://data.mendeley.com/datasets/8j2g3csprk)** (Pakistan) - 3,008 images
-   - Download: [Mendeley Data](https://data.mendeley.com/datasets/8j2g3csprk/1)
+### External Validation Dataset
+To assess generalization to unseen geographic populations:
+
+**[DA/DB TB Dataset](https://data.mendeley.com/datasets/8j2g3csprk)** (Pakistan) - 278 images total
+- Download: [Mendeley Data](https://data.mendeley.com/datasets/8j2g3csprk/1)
+- Alternative: [SourceForge](https://sourceforge.net/projects/tbxpredict/files/data/)
+- **DA subset (156 images)** used for external validation - completely excluded from training
+- **Validation Results:** 67.3% accuracy, 85.7% sensitivity, 52.9% specificity
+- **Paper:** [Lopes & Valiati, 2017](https://www.sciencedirect.com/science/article/abs/pii/S0010482517302250)
 
 ---
 
@@ -758,32 +782,33 @@ GEMINI_API_KEY=your_gemini_api_key_here
    - Comprehensive clinical synthesis
 6. **Generate Report**: Click "Generate Clinical Report" for PDF
 
-### Google Drive Batch Processing 🆕
+### Batch Processing 🆕
 
 **Perfect for clinics processing multiple X-rays daily**
 
-```bash
-# Setup (one-time)
-# See GDRIVE_SETUP.md for detailed instructions
-pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client fpdf
-
-# Run batch processor
-python gdrive_batch_processor.py
-```
-
 **How it works:**
-1. Upload X-rays to "TB_XRay_Inbox" folder in Google Drive
-2. System automatically detects and analyzes them
-3. PDF reports saved to "TB_Reports" folder
-4. Original X-rays moved to "TB_Processed" folder
+1. Click "Batch" mode in the UI
+2. Select multiple X-ray images (up to 100)
+3. Click "Process Batch & Download Reports"
+4. System processes all images and generates individual PDF reports
+5. Download ZIP file containing all reports with preserved filenames
+
+**Example:**
+- Upload: `patient_001.png`, `patient_002.png`, `patient_003.png`
+- Download: `patient_001_report.pdf`, `patient_002_report.pdf`, `patient_003_report.pdf` + `batch_summary.json`
 
 **Use Cases:**
-- 📊 **Batch Processing**: Upload 100+ X-rays, get all reports overnight
-- 🏥 **Rural Clinics**: Staff uploads at 5pm, reports ready by morning
-- 📱 **Mobile Health**: Field workers upload via mobile, instant cloud processing
-- 🌐 **Telemedicine**: Remote clinics share Drive folder, central AI processes all
+- 📊 **Batch Screening**: Process 100+ X-rays in one session
+- 🏥 **Rural Clinics**: Batch process daily patient scans
+- 📱 **Mobile Health**: Collect images in field, batch process later
+- 🌐 **Telemedicine**: Process multiple remote patient scans efficiently
 
-**See [GDRIVE_SETUP.md](GDRIVE_SETUP.md) for complete setup guide**
+**Features:**
+- Individual PDF reports for each image
+- Filenames preserved for easy patient matching
+- Summary JSON with all results
+- Progress tracking during processing
+- Works entirely offline (no cloud required)
 
 ---
 
