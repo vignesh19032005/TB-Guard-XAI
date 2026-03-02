@@ -38,7 +38,28 @@ try:
             "venv/*",
             ".env",
             "*.log",
-            "deploy_to_hf.py" # no need to upload this script
+            "deploy_to_hf.py",  # no need to upload this script
+            "archive/*",  # exclude validation datasets
+            "validation_results/*",  # exclude validation results
+            "batch_temp/*",  # exclude batch temp files
+            "batch_reports/*",  # exclude batch reports
+            "*.pyc",
+            "*.pyo",
+            "*.pyd",
+            ".Python",
+            "pip-log.txt",
+            "pip-delete-this-directory.txt",
+            ".pytest_cache/*",
+            "*.egg-info/*",
+            "dist/*",
+            "build/*",
+            ".DS_Store",
+            "Thumbs.db",
+            "analyze_validation_failure.py",  # exclude analysis scripts
+            "validate_dadb_dataset.py",
+            "validate_with_threshold_tuning.py",
+            "VALIDATION_SUMMARY.md",
+            "EXTERNAL_VALIDATION.md"
         ]
     )
     
