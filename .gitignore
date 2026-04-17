@@ -58,7 +58,6 @@ generate_table_images.py
 !TB_Guard_XAI\ VS\ Existing.png
 !TB-Guard-XAI.png
 
-demo_image_results.txt
 find_demo_images.py
 test_*.py
 
@@ -80,3 +79,7 @@ validation_results/
 
 
 LinguiSync_Conference_Paper.md
+
+production_docs
+production_images
+EXTRA
